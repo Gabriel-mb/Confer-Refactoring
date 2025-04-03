@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleMouseEvents" onMousePressed="#handleMouseEvents" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.EmployeeController">
+   <children>
+      <Rectangle arcHeight="32.0" arcWidth="27.0" height="80.0" layoutX="68.0" layoutY="-12.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="139.0">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </fill>
+         <effect>
+            <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
+               <color>
+                  <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
+               </color>
+            </DropShadow>
+         </effect>
+      </Rectangle>
+      <MFXButton contentDisplay="TOP" layoutX="104.0" layoutY="5.0" onAction="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
+         <graphic>
+            <ImageView fitHeight="32.0" fitWidth="32.0">
+               <image>
+                  <Image url="@../../assets/1946488.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+         </graphic>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <MFXTextField fx:id="idEmployee" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" layoutX="47.0" layoutY="84.0" prefHeight="28.0" prefWidth="158.0" promptText="Matrícula" style="-fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-background-radius: 5; -fx-border-width: 1;" textLimit="8">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </MFXTextField>
+      <MFXTextField fx:id="employeeName" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" layoutX="216.0" layoutY="84.0" prefHeight="36.0" prefWidth="340.0" promptText="Nome do Funcionário" style="-fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-background-radius: 5; -fx-border-width: 1;">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </MFXTextField>
+      <Button layoutX="566.0" layoutY="84.0" mnemonicParsing="false" onAction="#onIncludeButtonClick" prefHeight="36.0" prefWidth="79.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda); -fx-background-radius: 5;" text="Cadastrar" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button fx:id="removeButton" layoutX="47.0" layoutY="723.0" mnemonicParsing="false" onAction="#onRemoveButtonClick" prefHeight="30.0" prefWidth="67.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda); -fx-background-radius: 5;" text="Remover" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <MFXTableView fx:id="table" layoutX="47.0" layoutY="128.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="940.0" />
+      <Button fx:id="printButton" layoutX="920.0" layoutY="723.0" mnemonicParsing="false" onAction="#onPrintButtonClick" prefHeight="30.0" prefWidth="67.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda); -fx-background-radius: 5;" text="Imprimir" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <MFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" ellipsisString="" layoutX="990.0" layoutY="10.0" onAction="#onCloseButtonClick" prefHeight="18.0" prefWidth="23.0" rippleBackgroundOpacity="0.0" rippleColor="WHITE" rippleRadius="15.0" rippleRadiusMultiplier="15.0" style="-fx-background-radius: 15; -fx-background-color: #E43D3E;" text="X" textFill="WHITE">
+         <font>
+            <Font name="Arial Bold" size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <MFXButton fx:id="minimizeButton" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" ellipsisString="" layoutX="963.0" layoutY="10.0" prefHeight="18.0" prefWidth="23.0" rippleBackgroundOpacity="0.0" rippleColor="WHITE" rippleRadius="15.0" rippleRadiusMultiplier="15.0" style="-fx-background-radius: 15; -fx-background-color: #ADADAD;" text="-" textFill="WHITE">
+         <font>
+            <Font name="Arial Bold" size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+   </children>
+</AnchorPane>

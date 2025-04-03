@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#anchorPane_dragged" onMousePressed="#anchorPane_pressed" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app_epi.DevolutionController">
+   <children>
+      <Rectangle arcHeight="32.0" arcWidth="27.0" height="256.0" layoutX="186.0" layoutY="256.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="653.0">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </fill>
+         <effect>
+            <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
+               <color>
+                  <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
+               </color>
+            </DropShadow>
+         </effect>
+      </Rectangle>
+      <Label fx:id="nameLabel" layoutX="361.0" layoutY="294.0" prefHeight="36.0" prefWidth="286.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="idLabel" layoutX="208.0" layoutY="294.0" prefHeight="36.0" prefWidth="139.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+         <font>
+            <Font size="17.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </Label>
+      <MFXDatePicker fx:id="dateDevolution" layoutX="576.0" layoutY="435.0" prefHeight="38.0" prefWidth="158.0" promptText="Data devolucao" style="-fx-border-color: #0e1c6b;">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></MFXDatePicker>
+      <MFXTextField fx:id="fine" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" layoutX="424.0" layoutY="436.0" prefHeight="36.0" prefWidth="139.0" promptText="Multa" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-border-width: 1; -fx-padding: 4;" text="0" textLimit="8">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </MFXTextField>
+      <Rectangle arcHeight="32.0" arcWidth="27.0" height="80.0" layoutX="77.0" layoutY="-13.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="174.0">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </fill>
+         <effect>
+            <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
+               <color>
+                  <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
+               </color>
+            </DropShadow>
+         </effect>
+      </Rectangle>
+      <MFXButton contentDisplay="TOP" layoutX="169.0" layoutY="2.0" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
+         <graphic>
+            <ImageView fitHeight="35.0" fitWidth="34.0" onMouseClicked="#onMenuButtonClick">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <image>
+                  <Image url="@../../assets/1946488.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <Button layoutX="906.0" layoutY="684.0" mnemonicParsing="false" onMouseClicked="#onSaveButtonClick" prefHeight="45.0" prefWidth="96.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda); -fx-background-radius: 5;" text="Salvar" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <ComboBox fx:id="statusComboBox" layoutX="269.0" layoutY="436.0" onAction="#setStatusComboBox" prefHeight="36.0" prefWidth="143.0" promptText="Status" style="-fx-padding: 4; -fx-background-color: white; -fx-background-radius: 5; -fx-border-radius: 5;">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></ComboBox>
+      <Label fx:id="idEquipmentLabel" layoutX="208.0" layoutY="364.0" prefHeight="36.0" prefWidth="139.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="equipmentNameLabel" layoutX="361.0" layoutY="364.0" prefHeight="36.0" prefWidth="286.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="dateBorrowedLabel" layoutX="660.0" layoutY="364.0" prefHeight="36.0" prefWidth="128.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="supplierLabel" layoutX="660.0" layoutY="294.0" prefHeight="36.0" prefWidth="128.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 4;">
+
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Line endX="-100.0" endY="-48.0" layoutX="259.0" layoutY="52.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
+      <MFXButton contentDisplay="TOP" layoutX="87.0" layoutY="2.0" onMouseClicked="#onBackButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Voltar" textAlignment="CENTER" textFill="WHITE">
+         <graphic>
+            <ImageView fitHeight="35.0" fitWidth="34.0" onMouseClicked="#onBackButtonClick">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <image>
+                  <Image url="@../../assets/Back_button.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <MFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" ellipsisString="" layoutX="990.0" layoutY="10.0" onAction="#onCloseButtonClick" prefHeight="18.0" prefWidth="23.0" rippleBackgroundOpacity="0.0" rippleColor="WHITE" rippleRadius="15.0" rippleRadiusMultiplier="15.0" style="-fx-background-radius: 15; -fx-background-color: #E43D3E;" text="X" textFill="WHITE">
+         <font>
+            <Font name="Arial Bold" size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <MFXButton fx:id="minimizeButton" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" ellipsisString="" layoutX="963.0" layoutY="10.0" prefHeight="18.0" prefWidth="23.0" rippleBackgroundOpacity="0.0" rippleColor="WHITE" rippleRadius="15.0" rippleRadiusMultiplier="15.0" style="-fx-background-radius: 15; -fx-background-color: #ADADAD;" text="-" textFill="WHITE">
+         <font>
+            <Font name="Arial Bold" size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </MFXButton>
+      <!---->
+   </children>
+</AnchorPane>
