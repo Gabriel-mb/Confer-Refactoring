@@ -45,6 +45,7 @@ mvn spring-boot:run
 
 🏗 Estrutura do Projeto
 
+```
 src/
 ├── main/
 │   ├── java/com/confer/
@@ -57,7 +58,7 @@ src/
 │       ├── assets/       # Imagens
 │       ├── static/       # Arquivos FXML e JRXML
 └──     └── application.properties 
-
+```
 
 📄 Licença
 Distribuído sob licença MIT. Veja LICENSE para mais informações.
