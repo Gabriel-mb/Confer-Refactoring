@@ -12,9 +12,7 @@ import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,11 +61,11 @@ public class BorrowedService {
     }
 
     public ObservableList<EpiBorrowed> episListBorrowed(Integer id) {
-        return FXCollections.observableArrayList(epiBorrowedRepository.findByEmployeeId(id));
+        return FXCollections.observableArrayList(epiBorrowedRepository.findByIdEmployee(id));
     }
 
     public void updateBorrowedEpi(Integer quantity, Integer numCa, Integer employeeId) {
-        epiBorrowedRepository.updateQuantityByNumCaAndEmployeeId(quantity, numCa, employeeId);
+        epiBorrowedRepository.updateQuantityByNumCaAndIdEmployee(quantity, numCa, employeeId);
     }
 
     public void create(EpiBorrowed epiBorrowed) {

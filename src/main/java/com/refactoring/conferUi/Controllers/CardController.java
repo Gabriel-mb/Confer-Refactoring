@@ -1,9 +1,11 @@
 package com.refactoring.conferUi.Controllers;
 
-import com.refactoring.conferUi.Model.Entity.EquipmentBorrowed;
+import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
 import com.refactoring.conferUi.Model.Entity.Employee;
 import com.refactoring.conferUi.Services.BorrowedService;
 import com.refactoring.conferUi.Services.EmployeeService;
+import com.refactoring.conferUi.Utils.AlertUtils;
+import com.refactoring.conferUi.Utils.NavigationUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
@@ -15,40 +17,41 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 
 
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import static com.refactoring.conferUi.Utils.AlertUtils.showErrorAlert;
+import static com.refactoring.conferUi.Utils.NavigationUtils.navigateTo;
 import static java.lang.Integer.parseInt;
 
 @Controller
-public class CardController {/*
+public class CardController {
 
     private Stage stage;
     private Scene scene;
@@ -62,7 +65,7 @@ public class CardController {/*
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private MFXTableView<EquipmentBorrowed> table;
+    private MFXTableView<BorrowedDTO> table;
     @FXML
     private MFXButton minimizeButton;
     @FXML
@@ -70,247 +73,201 @@ public class CardController {/*
     @FXML
     private MFXButton resetButton;
 
-    private ObservableList<EquipmentBorrowed> borrowingsList;
-    private ObservableList<EquipmentBorrowed> filteredItems;
+    private ObservableList<BorrowedDTO> borrowingsList;
+    private ObservableList<BorrowedDTO> filteredItems;
 
-    private Double x;
-    private Double y;
+    private final double[] coordinates = new double[2];
+
+    private final EmployeeService employeeService;
+    private final BorrowedService borrowedService;
+
+    @Autowired
+    public CardController(EmployeeService employeeService, BorrowedService borrowedService) {
+        this.employeeService = employeeService;
+        this.borrowedService = borrowedService;
+    }
 
 
     @FXML
     private void initialize() {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
         for (Node node : anchorPane.getChildrenUnmodifiable()) {
             if (node instanceof TextField) {
                 node.setFocusTraversable(false);
             }
         }
         newEmployeeId.setOnAction(event -> {
-            Connection connection = null;
             try {
-                connection = new ConnectionDAO().connect();
-                EmployeeService employeeService = new EmployeeService(connection);
                 Employee employee = employeeService.readId(parseInt(employeeId.getText()));
 
                 if (employee == null) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro");
-                    alert.setHeaderText("Ocorreu um erro");
-                    alert.setContentText("Nenhum funcionário encontrado!");
-                    alert.showAndWait();
-                    return;
+                    showErrorAlert("Nenhum funcionário encontrado!", "Tente Novamente!");
                 }
 
-                //Envia o id para o cardController
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml"));
-                Parent root = loader.load();
-                CardController cardController = loader.getController();
-                cardController.setTableEmployee(employeeId.getText());
+                navigateTo(event, CardController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {
+                    if (controller instanceof CardController cardController) {
+                        try {
+                            cardController.setTableEmployee(employeeId.getText());
+                        } catch (SQLException | IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
 
-                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                scene = new Scene(root);
-                stage.setScene(scene);
-                scene.setFill(Color.TRANSPARENT);
-                stage.show();
-
-                connection.close();
             } catch (SQLException | IOException e) {
                 throw new RuntimeException(e);
             }
         });
         minimizeButton.setOnAction(e ->
-                ( (Stage) ( (Button) e.getSource() ).getScene().getWindow() ).setIconified(true)
+                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
         );
         datePicker.setOnAction(event -> onDatePickerSelect());
         resetButton.setOnAction(event -> resetDatePicker());
         filteredItems = FXCollections.observableArrayList();
     }
 
-    public void onSearchButtonClick(MouseEvent event) throws SQLException, IOException {
+    public void onSearchButtonClick() throws SQLException, IOException {
         if (newEmployeeId.getText().length() != 8) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Matrícula deve ter 8 digitos!");
-            alert.showAndWait();
+            showErrorAlert("Ocorreu um erro!", "Matrícula deve ter 8 digitos!");
             return;
         }
 
-        Connection connection = new ConnectionDAO().connect();
-        EmployeeService employeeService = new EmployeeService(connection);
-        Employee employee = employeeService.readId(parseInt(newEmployeeId.getText()));
-
-        if (employee == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Nenhum funcionário encontrado!");
-            alert.showAndWait();
+        if (employeeService.readId(parseInt(newEmployeeId.getText())) == null) {
+            showErrorAlert("Nenhum funcionário encontrado!", "Tente Novamente!");
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml")); //Diferente dos outros loads
-        Parent root = loader.load();
-
-        CardController cardController = loader.getController();
-        cardController.setTableEmployee(newEmployeeId.getText());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        setTableEmployee(newEmployeeId.getText());
     }
 
-    public void onMenuButtonClick(MouseEvent event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("search-view.fxml")));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+    public void onMenuButtonClick(ActionEvent event) throws IOException {
+        NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
     }
 
     public void onDeleteButtonClick(ActionEvent event) throws IOException, SQLException {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Confirmação");
-        alert.setHeaderText("Tem certeza que deseja continuar?");
-        alert.setContentText("Esta ação não pode ser desfeita.");
-        ButtonType yesButton = new ButtonType("Sim");
-        ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(cancelButton, yesButton);
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = AlertUtils.showWarningAlert("Tem certeza que deseja continuar?", "Esta ação não pode ser desfeita.");
 
-        if (result.get() == yesButton) {
-            Connection connection = new ConnectionDAO().connect();
-            EmployeeService employeeService = new EmployeeService(connection);
+        if (result.get() == ButtonType.YES) {
             employeeService.delete(parseInt(employeeId.getText()));
 
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Ficha Deletada");
-            alert.setHeaderText(null);
-            alert.setContentText("A ficha foi deletada com sucesso!");
-            alert.showAndWait();
-
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("search-view.fxml")));
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            AlertUtils.showInfoAlert("Ficha Deletada", "A ficha foi deletada com sucesso!");
+            NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
         }
     }
 
     public void setTableEmployee(String id) throws SQLException, IOException {
-        //Preenche a TableView de ferramentas pesquisando o ID do funcionario na DataBase
+        table.getTableColumns().clear();
+        table.getItems().clear();
         employeeId.setText(id);
 
-        Connection connection = new ConnectionDAO().connect();
-        BorrowedService borrowedService = new BorrowedService(connection);
-        borrowingsList = FXCollections.observableList(borrowedService.listBorrowed(Integer.valueOf(employeeId.getText())));
+        List<BorrowedDTO> borrowedItems = borrowedService.listBorrowed(Integer.valueOf(employeeId.getText()));
+        borrowingsList = FXCollections.observableArrayList(borrowedItems);
 
-        MFXTableColumn<EquipmentBorrowed> idEquipment = new MFXTableColumn<>("Patrimônio", Comparator.comparing(EquipmentBorrowed::getIdEquipment));
-        MFXTableColumn<EquipmentBorrowed> supplierName = new MFXTableColumn<>("Fornecedor", Comparator.comparing(EquipmentBorrowed::getSupplierName));
-        MFXTableColumn<EquipmentBorrowed> equipmentName = new MFXTableColumn<>("Ferramenta", Comparator.comparing(EquipmentBorrowed::getEquipmentName));
-        MFXTableColumn<EquipmentBorrowed> date = new MFXTableColumn<>("Data", Comparator.comparing(EquipmentBorrowed::getDate));
+        MFXTableColumn<BorrowedDTO> idEquipment = new MFXTableColumn<>("Patrimônio",
+                Comparator.comparing(BorrowedDTO::getIdEquipment));
 
-        idEquipment.setRowCellFactory(Borrowed -> new MFXTableRowCell<>(EquipmentBorrowed::getIdEquipment));
-        supplierName.setRowCellFactory(Borrowed -> new MFXTableRowCell<>(EquipmentBorrowed::getSupplierName));
-        equipmentName.setRowCellFactory(Borrowed -> new MFXTableRowCell<>(EquipmentBorrowed::getEquipmentName));
-        date.setRowCellFactory(Borrowed -> new MFXTableRowCell<>(EquipmentBorrowed::getDate));
+        MFXTableColumn<BorrowedDTO> supplierName = new MFXTableColumn<>("Fornecedor",
+                Comparator.comparing(BorrowedDTO::getSupplierName));
 
-        table.getTableColumns().addAll(idEquipment, supplierName, equipmentName, date);
+        MFXTableColumn<BorrowedDTO> equipmentName = new MFXTableColumn<>("Ferramenta",
+                Comparator.comparing(BorrowedDTO::getEquipmentName));
+
+        MFXTableColumn<BorrowedDTO> date = new MFXTableColumn<>("Data",
+                Comparator.comparing(BorrowedDTO::getDate));
+
+        idEquipment.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getIdEquipment));
+        supplierName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getSupplierName));
+        equipmentName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getEquipmentName));
+        date.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getDate));
+
         table.getFilters().addAll(
-                new StringFilter<>("Ferramenta", EquipmentBorrowed::getEquipmentName),
-                new IntegerFilter<>("Patrimônio", EquipmentBorrowed::getIdEquipment),
-                new StringFilter<>("Fornecedor", EquipmentBorrowed::getSupplierName)
+                new StringFilter<>("Ferramenta", BorrowedDTO::getEquipmentName),
+                new IntegerFilter<>("Patrimônio", BorrowedDTO::getIdEquipment),
+                new StringFilter<>("Fornecedor", BorrowedDTO::getSupplierName)
         );
+
         equipmentName.setPrefWidth(350);
+        table.getTableColumns().addAll(idEquipment, supplierName, equipmentName, date);
         table.setItems(borrowingsList);
 
-        EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());
     }
+
     public void onCloseButtonClick() {
         System.exit(0);
     }
-    public void anchorPane_dragged(MouseEvent event) {
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-        stage.setY(event.getScreenY() - y);
-        stage.setX(event.getScreenX() - x);
 
+    @FXML
+    private void handleMouseEvents(MouseEvent event) {
+        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
-    public void anchorPane_pressed(MouseEvent event) {
-        x = event.getSceneX();
-        y = event.getSceneY();
-    }
     public void onModifyButtonClick (ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("patInputsModify-view.fxml"));
-        Parent root = loader.load();
-        EquipmentInputsController equipmentInputsController = loader.getController();
-        equipmentInputsController.setEmployee(employeeId.getText(), nameLabel.getText());
-        equipmentInputsController.setTable(borrowingsList, true);
-
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        navigateTo(event, CardController.class.getResource("/static/fxml/patInputsModify-view.fxml"), controller -> {
+            if (controller instanceof EquipmentInputsController equipmentInputsController) {
+                equipmentInputsController.setEmployee(employeeId.getText(), nameLabel.getText());
+                equipmentInputsController.setTable(borrowingsList, true);
+            }
+        });
     }
 
-    public void onPrintButtonClick () throws JRException, SQLException, IOException {
+    public void onPrintButtonClick() {
+        try {
+            // 1. Gerar o relatório
+            ObservableList<BorrowedDTO> items = table.getTransformableList();
+            Map<String, Object> params = new HashMap<>();
+            params.put("CollectionBeanParam", new JRBeanCollectionDataSource(items));
+            params.put("employeeName", nameLabel.getText());
+            params.put("employeeId", parseInt(employeeId.getText()));
+            params.put("image", ClassLoader.getSystemResourceAsStream("assets/LogoCorel.png"));
 
-        ObservableList<EquipmentBorrowed> filteredItems = table.getTransformableList();
+            // 2. Compilar e exportar para PDF
+            JasperPrint print = JasperFillManager.fillReport(
+                    JasperCompileManager.compileReport(
+                            getClass().getResourceAsStream("/static/jrxml/CardPrint.jrxml")),
+                    params,
+                    new JREmptyDataSource()
+            );
 
-        JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(filteredItems);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("CollectionBeanParam", itemsJRBean);
-        parameters.put("employeeName", nameLabel.getText());
-        parameters.put("employeeId", parseInt(employeeId.getText()));
-        parameters.put("image", ClassLoader.getSystemResourceAsStream("assets/LogoCorel.png"));
+            // 3. Salvar e abrir no Windows
+            File pdf = File.createTempFile("rel_", ".pdf");
+            JasperExportManager.exportReportToPdfFile(print, pdf.getPath());
+            Runtime.getRuntime().exec("cmd /c start \"\" \"" + pdf.getPath() + "\"");
 
-        InputStream inputStream = getClass().getResourceAsStream("/static/jrxml/CardPrint.jrxml");
-
-        JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-        JasperViewer.viewReport(jasperPrint, false);
-    }
-    public void onEquipButtonClick(ActionEvent event) throws SQLException, IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("equipCard-view.fxml"));
-        Parent root = loader.load();
-
-        StockEquipCardController stockEquipCardController = loader.getController();
-        stockEquipCardController.setTableEmployee(employeeId.getText());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void onEpiButtonClick(ActionEvent event) throws SQLException, IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("epiCard-view.fxml"));
-        Parent root = loader.load();
+   public void onEquipButtonClick(ActionEvent event) throws IOException {
+       navigateTo(event, CardController.class.getResource("/static/fxml/equipCard-view.fxml"), controller -> {
+           if (controller instanceof StockEquipCardController stockEquipCardController) {
+               try {
+                   stockEquipCardController.setTableEmployee(employeeId.getText());
+               } catch (SQLException | IOException e) {
+                   throw new RuntimeException(e);
+               }
+           }
+       });
+    }
 
-        EpiCardController epiCardController = loader.getController();
-        epiCardController.setTableEmployee(employeeId.getText());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+    public void onEpiButtonClick(ActionEvent event) throws IOException {
+        navigateTo(event, CardController.class.getResource("/static/fxml/epiCard-view.fxml"), controller -> {
+            if (controller instanceof EpiCardController epiCardController) {
+                try {
+                    epiCardController.setTableEmployee(employeeId.getText());
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void onDatePickerSelect() {
         LocalDate selectedDate = datePicker.getValue();
-        filteredItems.clear(); // Limpa a lista de itens filtrados
+        filteredItems.clear();
 
-        for (EquipmentBorrowed item : borrowingsList) {
+        for (BorrowedDTO item : borrowingsList) {
             LocalDate itemDate = item.getDate().toLocalDate();
             if (itemDate.equals(selectedDate)) {
                 filteredItems.add(item);
@@ -319,7 +276,8 @@ public class CardController {/*
 
         table.setItems(filteredItems);
     }
+
     public void resetDatePicker() {
         table.setItems(borrowingsList);
-    }*/
+    }
 }

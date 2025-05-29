@@ -4,6 +4,7 @@ import javafx.application.Application;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -14,10 +15,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class ConferSpringApplication {
 
 	public static void main(String[] args) {
-		// Inicia o contexto do Spring em uma thread separada
-		new Thread(() -> SpringApplication.run(ConferSpringApplication.class, args)).start();
+		// Inicializa o Spring Boot primeiro
+		ConfigurableApplicationContext context = SpringApplication.run(ConferSpringApplication.class, args);
 
-		// Inicia o JavaFX na thread principal
+		// Configura o contexto na aplicação JavaFX
+		ConferApplication.setSpringContext(context);
+
+		// Inicializa o JavaFX
 		Application.launch(ConferApplication.class, args);
 	}
 }

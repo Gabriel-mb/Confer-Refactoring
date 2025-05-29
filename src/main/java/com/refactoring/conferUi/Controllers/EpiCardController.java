@@ -40,7 +40,7 @@ import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
-public class EpiCardController {/*
+public class EpiCardController {
 
     private Stage stage;
     private Scene scene;
@@ -61,6 +61,9 @@ public class EpiCardController {/*
     private Double x;
     private Double y;
     private ObservableList<Epi> epiList;
+
+    EpiService epiService;
+    EmployeeService employeeService;
 
 
     @FXML
@@ -86,8 +89,6 @@ public class EpiCardController {/*
             return;
         }
 
-        Connection connection = new ConnectionDAO().connect();
-        EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(newEmployeeId.getText()));
 
         if (employee == null) {
@@ -122,7 +123,7 @@ public class EpiCardController {/*
     }
 
     public void setTableEmployee(String id) throws SQLException, IOException {
-        //Preenche a TableView de ferramentas pesquisando o ID do funcionario na DataBase
+        /*//Preenche a TableView de ferramentas pesquisando o ID do funcionario na DataBase
         employeeId.setText(id);
 
         Connection connection = new ConnectionDAO().connect();
@@ -155,9 +156,8 @@ public class EpiCardController {/*
         );
         table.setItems(epiList);
 
-        EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
-        nameLabel.setText(employee.getName());
+        nameLabel.setText(employee.getName());*/
     }
     public void onCloseButtonClick() {
         System.exit(0);
@@ -174,7 +174,7 @@ public class EpiCardController {/*
         y = event.getSceneY();
     }
     public void onModifyButtonClick (ActionEvent event) throws IOException, SQLException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("epiInputsModify-view.fxml"));
+        /*FXMLLoader loader = new FXMLLoader(getClass().getResource("epiInputsModify-view.fxml"));
         Parent root = loader.load();
         EpiInputsController epiInputsController = loader.getController();
         epiInputsController.setEmployee(employeeId.getText(), nameLabel.getText());
@@ -185,14 +185,11 @@ public class EpiCardController {/*
         scene = new Scene(root);
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        stage.show();*/
     }
 
     public void onPrintButtonClick () throws JRException, SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        EpiService epiService = new EpiService(connection);
-
-        JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(epiService.episListBorrowed(Integer.valueOf(employeeId.getText())));
+        /*JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(epiService.episListBorrowed(Integer.valueOf(employeeId.getText())));
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("CollectionBeanParam", itemsJRBean);
         parameters.put("employeeName", nameLabel.getText());
@@ -204,7 +201,7 @@ public class EpiCardController {/*
         JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
         JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-        JasperViewer.viewReport(jasperPrint, false);
+        JasperViewer.viewReport(jasperPrint, false);*/
     }
     public void onBackButtonClick (MouseEvent event) throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml"));
@@ -218,5 +215,5 @@ public class EpiCardController {/*
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
         stage.show();
-    }*/
+    }
 }

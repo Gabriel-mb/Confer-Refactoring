@@ -26,16 +26,8 @@ public class SupplierService {
         supplierRepository.save(supplier);
     }
 
-    public Supplier readById(Integer id) throws SQLException{
+    public Supplier readById(Integer id) throws SQLException {
         Optional<Supplier> result = supplierRepository.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new RuntimeException();
-    }
-
-    public Supplier findByName(String name) throws SQLException {
-        Optional<Supplier> result = supplierRepository.findBySupplierName(name);
         if (result.isPresent()) {
             return result.get();
         }
@@ -53,4 +45,13 @@ public class SupplierService {
     public List<String> selectSupplier() throws SQLException {
         return supplierRepository.findAllSupplierNames();
     }
+
+    public Integer findIdByName(String name) {
+        Integer result = supplierRepository.findSupplierIdBySupplierName(name);
+        if (result != null) {
+            return result;
+        }
+        throw new RuntimeException();
+    }
+
 }

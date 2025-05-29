@@ -1,16 +1,18 @@
 package com.refactoring.conferUi.Model.Entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class StockId implements Serializable {
 
-    @Column(name = "equipmentName")
+    @Column(name = "equipment_name")
     private String equipmentName;
 
-    @Column(name = "supplierId")
+    @Column(name = "supplier_id")
     private Integer supplierId;
 
     public StockId() {}
@@ -18,6 +20,21 @@ public class StockId implements Serializable {
     public StockId(String equipmentName, Integer supplierId) {
         this.equipmentName = equipmentName;
         this.supplierId = supplierId;
+    }
+
+    // equals() e hashCode()
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StockId stockId = (StockId) o;
+        return Objects.equals(equipmentName, stockId.equipmentName) &&
+                Objects.equals(supplierId, stockId.supplierId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(equipmentName, supplierId);
     }
 
     public String getEquipmentName() {
@@ -34,17 +51,5 @@ public class StockId implements Serializable {
 
     public void setSupplierId(Integer supplierId) {
         this.supplierId = supplierId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        StockId stockId = (StockId) o;
-        return Objects.equals(equipmentName, stockId.equipmentName) && Objects.equals(supplierId, stockId.supplierId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(equipmentName, supplierId);
     }
 }

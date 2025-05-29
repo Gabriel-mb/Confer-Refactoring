@@ -11,6 +11,10 @@ public class Stock {
 
     private Integer quantity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", referencedColumnName = "supplier_id", insertable = false, updatable = false)
+    private Supplier supplier;
+
     public Stock() {
     }
 
@@ -33,5 +37,13 @@ public class Stock {
 
     public void setStockId(StockId stockId) {
         this.stockId = stockId;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 }

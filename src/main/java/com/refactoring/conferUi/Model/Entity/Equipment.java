@@ -25,6 +25,12 @@ public class Equipment {
     public Equipment() {
     }
 
+    public Equipment(Integer idEquipment, String nameEquip, Supplier supplier) {
+        this.idEquipment = idEquipment;
+        this.nameEquip = nameEquip;
+        this.supplier = supplier;
+    }
+
     public Integer getIdEquipment() {
         return idEquipment;
     }

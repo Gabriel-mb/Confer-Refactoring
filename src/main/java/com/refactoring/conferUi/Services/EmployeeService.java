@@ -1,15 +1,19 @@
 package com.refactoring.conferUi.Services;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Optional;
 
 import com.refactoring.conferUi.Model.Entity.Employee;
 import com.refactoring.conferUi.dao.EmployeeRepository;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class EmployeeService {
 
     @Autowired
@@ -29,7 +33,7 @@ public class EmployeeService {
         if (result.isPresent()) {
             return result.get();
         }
-        throw new RuntimeException();
+        return null;
     }
 
     public void updateName(Employee employee) throws SQLException {
@@ -41,7 +45,12 @@ public class EmployeeService {
     }
 
     public ObservableList<Employee> listEmployees() throws SQLException{
-        return (ObservableList<Employee>) employeeRepository.findAll();
+        List<Employee> employees = employeeRepository.findAll();
+        return FXCollections.observableArrayList(employees);
+    }
+
+    public void deleteByList(List<Integer> idList) {
+        employeeRepository.deleteByIdList(idList);
     }
 }
 

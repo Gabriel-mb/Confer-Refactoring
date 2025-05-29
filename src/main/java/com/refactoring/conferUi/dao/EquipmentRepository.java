@@ -28,38 +28,57 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
             @Param("supplierId") int supplierId
     );
 
-    @Query("""
-        SELECT NEW com.seuprojeto.dto.EquipmentDTO(
-            e.idEquipment,\s
-            e.name,\s
-            s.name
-        )
-        FROM Equipment e
-        JOIN e.supplier s
-        WHERE e.idEquipment = :id
-   \s""")
+    @Query("SELECT NEW com.refactoring.conferUi.Model.DTO.EquipmentDTO(" +
+            "e.idEquipment, " +
+            "e.nameEquip, " +
+            "s.supplierName, " +
+            "'', " +
+            "'Armazenado', " +  // status
+            "null " +
+            ") " +
+            "FROM Equipment e " +
+            "JOIN e.supplier s " +
+            "WHERE e.idEquipment = :id")
     List<EquipmentDTO> findEquipmentWithSupplierById(@Param("id") Integer id);
 
     @Query("""
-        SELECT NEW com.refactoring.conferUi.Model.DTO.EquipmentDTO(
-            e.idEquipment,
-            e.name,
-            s.name,
-            COALESCE(emp.name, ''),
-            CASE WHEN b.idEquipment IS NOT NULL THEN 'Em Uso' ELSE 'Armazenado' END,
-            b.date
-        )
-        FROM Equipment e
-        JOIN e.supplier s
-        LEFT JOIN Borrowed b ON e.idEquipment = b.equipment.idEquipment\s
-                          AND e.supplier.id = b.equipment.supplier.id
-                          AND b.date = (
-                              SELECT MAX(b2.date)\s
-                              FROM Borrowed b2\s
-                              WHERE b2.equipment.idEquipment = e.idEquipment
-                          )
-        LEFT JOIN Employee emp ON b.idEmployee = emp.idEmployee
-        ORDER BY e.idEquipment
-   \s""")
-    List<EquipmentDTO> findAllEquipmentWithStatus();
+    SELECT NEW com.refactoring.conferUi.Model.DTO.EquipmentDTO(
+        e.idEquipment,
+        e.nameEquip,
+        s.supplierName,
+        '',
+        'Armazenado',
+        null
+    )
+    FROM Equipment e
+    JOIN e.supplier s
+    WHERE NOT EXISTS (
+        SELECT 1 FROM EquipmentBorrowed b 
+        WHERE b.equipment = e
+    )
+    ORDER BY e.idEquipment
+""")
+    List<EquipmentDTO> findStoredEquipment();
+
+    @Query("""
+    SELECT NEW com.refactoring.conferUi.Model.DTO.EquipmentDTO(
+        e.idEquipment,
+        e.nameEquip,
+        s.supplierName,
+        emp.name,
+        'Em Uso',
+        b.date
+    )
+    FROM Equipment e
+    JOIN e.supplier s
+    JOIN EquipmentBorrowed b ON b.equipment = e
+    JOIN b.employee emp
+    WHERE b.date = (
+        SELECT MAX(b2.date)
+        FROM EquipmentBorrowed b2
+        WHERE b2.equipment = e
+    )
+    ORDER BY e.idEquipment
+""")
+    List<EquipmentDTO> findBorrowedEquipment();
 }

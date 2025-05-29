@@ -2,45 +2,54 @@ package com.refactoring.conferUi;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import java.io.IOException;
 
 public class ConferApplication extends Application {
-    private static String[] savedArgs;
-    private ConfigurableApplicationContext applicationContext;
 
-    @Override
-    public void init() {
-        String[] args = getParameters().getRaw().toArray(new String[0]);
-        this.applicationContext = new SpringApplicationBuilder(ConferSpringApplication.class)
-                .run(args);
+    private static ConfigurableApplicationContext springContext;
+    private Stage primaryStage;
+
+    public static void setSpringContext(ConfigurableApplicationContext context) {
+        ConferApplication.springContext = context;
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
-        applicationContext.publishEvent(new StageReadyEvent(stage));
+    public void init() {
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+
+        // Carrega a cena principal usando o contexto do Spring
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/static/fxml/login-view.fxml"));
+        loader.setControllerFactory(springContext::getBean);
+
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+
+        primaryStage.setTitle("Confer Application");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     @Override
     public void stop() throws Exception {
-        applicationContext.close();
+        if (springContext != null) {
+            springContext.close();
+        }
         Platform.exit();
     }
 
-    public static class StageReadyEvent extends ApplicationEvent {
-        public StageReadyEvent(Stage stage) {
-            super(stage);
-        }
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
 
-        public Stage getStage() {
-            return ((Stage) getSource());
-        }
+    public static void main(String[] args) {
+        launch(args);
     }
 }

@@ -39,7 +39,7 @@ import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
-public class StockEquipCardController {/*
+public class StockEquipCardController {
 
     private Stage stage;
     private Scene scene;
@@ -63,6 +63,8 @@ public class StockEquipCardController {/*
 
     private ObservableList<EquipmentBorrowed> borrowingsList;
     private ObservableList<EquipmentBorrowed> filteredItems;
+
+    EmployeeService employeeService;
 
     private Double x;
     private Double y;
@@ -94,8 +96,6 @@ public class StockEquipCardController {/*
             return;
         }
 
-        Connection connection = new ConnectionDAO().connect();
-        EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(newEmployeeId.getText()));
 
         if (employee == null) {
@@ -129,7 +129,7 @@ public class StockEquipCardController {/*
         stage.show();
     }
 
-    public void onDeleteButtonClick(ActionEvent event) throws IOException, SQLException {
+    /*public void onDeleteButtonClick(ActionEvent event) throws IOException, SQLException {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Confirmação");
         alert.setHeaderText("Tem certeza que deseja continuar?");
@@ -156,10 +156,10 @@ public class StockEquipCardController {/*
             stage.setScene(scene);
             stage.show();
         }
-    }
+    }*/
 
     public void setTableEmployee(String id) throws SQLException, IOException {
-        //Preenche a TableView de ferramentas pesquisando o ID do funcionario na DataBase
+        /*//Preenche a TableView de ferramentas pesquisando o ID do funcionario na DataBase
         employeeId.setText(id);
 
         Connection connection = new ConnectionDAO().connect();
@@ -188,7 +188,7 @@ public class StockEquipCardController {/*
 
         EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
-        nameLabel.setText(employee.getName());
+        nameLabel.setText(employee.getName());*/
     }
 
     public void onCloseButtonClick() {
@@ -207,7 +207,7 @@ public class StockEquipCardController {/*
         y = event.getSceneY();
     }
 
-    public void onModifyButtonClick(ActionEvent event) throws IOException, SQLException {
+    /*public void onModifyButtonClick(ActionEvent event) throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("equipInputsModify-view.fxml"));
         Parent root = loader.load();
         StockEquipInputsController stockEquipInputsController = loader.getController();
@@ -219,9 +219,9 @@ public class StockEquipCardController {/*
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
         stage.show();
-    }
+    }*/
 
-    public void onPrintButtonClick() throws JRException, SQLException, IOException {
+    /*public void onPrintButtonClick() throws JRException, SQLException, IOException {
         ObservableList<EquipmentBorrowed> filteredItems = table.getTransformableList();
         JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(filteredItems);
         Map<String, Object> parameters = new HashMap<>();
@@ -236,7 +236,7 @@ public class StockEquipCardController {/*
         JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
         JasperViewer.viewReport(jasperPrint, false);
-    }
+    }*/
 
     public void onBackButtonClick(MouseEvent event) throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml"));
@@ -269,5 +269,5 @@ public class StockEquipCardController {/*
     public void resetDatePicker() {
         table.setItems(borrowingsList);
     }
-    */
+
 }

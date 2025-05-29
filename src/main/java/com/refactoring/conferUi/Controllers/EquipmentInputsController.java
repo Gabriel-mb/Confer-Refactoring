@@ -1,14 +1,11 @@
 package com.refactoring.conferUi.Controllers;
 
+import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
 import com.refactoring.conferUi.Model.Entity.EquipmentBorrowed;
-import com.refactoring.conferUi.Model.Entity.Equipment;
-import com.refactoring.conferUi.Services.BorrowedService;
-import com.refactoring.conferUi.Services.EquipmentsService;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -31,17 +28,14 @@ import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import static java.lang.Integer.parseInt;
 
-public class EquipmentInputsController {/*
-    ObservableList<EquipmentBorrowed> borrowingsList = FXCollections.observableArrayList();
+public class EquipmentInputsController {
+    ObservableList<BorrowedDTO> borrowingsList = FXCollections.observableArrayList();
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -58,7 +52,7 @@ public class EquipmentInputsController {/*
     @FXML
     private ComboBox<String> equipmentName;
     @FXML
-    private TableView<EquipmentBorrowed> table;
+    private TableView<BorrowedDTO> table;
     @FXML
     private TableColumn<EquipmentBorrowed, String> nameColumn;
     @FXML
@@ -76,7 +70,7 @@ public class EquipmentInputsController {/*
     private String supplierName;
 
 
-    public void onSearchButtonClick() throws SQLException, IOException {
+    /*public void onSearchButtonClick() throws SQLException, IOException {
         if (Objects.equals(equipmentIdInput.getText(), "")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erro");
@@ -102,9 +96,9 @@ public class EquipmentInputsController {/*
             }
         }
         equipmentName.getSelectionModel().selectFirst();
-    }
+    }*/
 
-    public void onIncludeButtonClick() throws SQLException, IOException {
+    /*public void onIncludeButtonClick() throws SQLException, IOException {
         Connection connection = new ConnectionDAO().connect();
         BorrowedService borrowedService = new BorrowedService(connection);
         splitSelection();
@@ -153,7 +147,7 @@ public class EquipmentInputsController {/*
             equipmentIdInput.setText("");
             date.setValue(null);
         }
-    }
+    }*/
 
     private void splitSelection() {
         String selection = equipmentName.getValue();
@@ -163,19 +157,19 @@ public class EquipmentInputsController {/*
         equipName = sections[1];
     }
 
-    public void removeData(Integer idEquip, String supplierName) throws SQLException, IOException {
+    /*public void removeData(Integer idEquip, String supplierName) throws SQLException, IOException {
         Connection connection = new ConnectionDAO().connect();
         BorrowedService borrowedService = new BorrowedService(connection);
         HistoryDAO historyDAO = new HistoryDAO(connection);
         if (borrowedService.readId(idEquip) != null) borrowedService.delete(idEquip, historyDAO.getSupplierId(supplierName));
-    }
+    }*/
 
     public void setEmployee(String id, String name) {
         idLabel.setText(id);
         nameLabel.setText(name);
     }
 
-    public void setTable(ObservableList<EquipmentBorrowed> list, Boolean confirm) {
+    public void setTable(ObservableList<BorrowedDTO> list, Boolean confirm) {
         nameColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, String>("equipmentName"));
         idColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, Integer>("idEquipment"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, java.util.Date>("date"));
@@ -229,7 +223,7 @@ public class EquipmentInputsController {/*
         stage.show();
     }
 
-    public void onDevolutionClick(ActionEvent event) throws IOException {
+    /*public void onDevolutionClick(ActionEvent event) throws IOException {
         //remover o dado do borrowed e gerar dado no histórico
         FXMLLoader loader = new FXMLLoader(getClass().getResource("devolution-view.fxml"));
         Parent root = loader.load();
@@ -253,7 +247,7 @@ public class EquipmentInputsController {/*
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
         stage.show();
-    }
+    }*/
 
     public void onBackButtonClick(MouseEvent event) throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml"));
@@ -268,5 +262,4 @@ public class EquipmentInputsController {/*
         scene.setFill(Color.TRANSPARENT);
         stage.show();
     }
-    */
 }

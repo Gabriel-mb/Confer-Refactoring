@@ -17,7 +17,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#anchorPane_dragged" onMousePressed="#anchorPane_pressed" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.CardController">
+<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleMouseEvents" onMousePressed="#handleMouseEvents" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.CardController">
    <children>
       <Label fx:id="nameLabel" layoutX="153.0" layoutY="94.0" prefHeight="0.0" prefWidth="255.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 4;">
          <font>
@@ -66,9 +66,9 @@
             </DropShadow>
          </effect>
       </Rectangle>
-      <MFXButton contentDisplay="TOP" layoutX="114.0" layoutY="3.0" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
+      <MFXButton contentDisplay="TOP" layoutX="114.0" layoutY="3.0" onAction="#onMenuButtonClick" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
          <graphic>
-            <ImageView fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onMenuButtonClick">
+            <ImageView fitHeight="32.0" fitWidth="32.0">
                <Image url="@../../assets/1946488.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />

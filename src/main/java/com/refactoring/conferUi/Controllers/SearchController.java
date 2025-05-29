@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import java.io.IOException;
+import java.sql.SQLException;
+
 import static com.refactoring.conferUi.Utils.NavigationUtils.navigateTo;
 
 @Controller
@@ -49,8 +51,8 @@ public class SearchController {
     private void handleMouseEvents(MouseEvent event) {
         NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
-    /*@FXML
-    public void onSearchButtonClick(ActionEvent event) throws SQLException {
+
+    public void onSearchButtonClick(ActionEvent event) {
         if (employeeId.getText().length() != 8) {
             AlertUtils.showErrorAlert("Matrícula deve ter 8 digitos!", "Tente Novamente!");
             return;
@@ -74,10 +76,9 @@ public class SearchController {
                 e.printStackTrace();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             AlertUtils.showErrorAlert("Erro ao buscar funcionário!", "Tente Novamente!");
         }
-    }*/
+    }
 
     @FXML
     public void onInventoryButtonClick(ActionEvent event) throws IOException {

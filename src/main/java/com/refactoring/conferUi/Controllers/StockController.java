@@ -1,8 +1,10 @@
 package com.refactoring.conferUi.Controllers;
 
+import com.refactoring.conferUi.Model.DTO.StockDTO;
 import com.refactoring.conferUi.Model.Entity.Stock;
 import com.refactoring.conferUi.Model.Entity.Supplier;
 import com.refactoring.conferUi.Services.StockService;
+import com.refactoring.conferUi.Services.SupplierService;
 import com.refactoring.conferUi.Utils.AlertUtils;
 import com.refactoring.conferUi.Utils.NavigationUtils;
 import io.github.palexdev.materialfx.controls.*;
@@ -10,6 +12,7 @@ import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.selection.MultipleSelectionModel;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,32 +23,42 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
 @Component
 public class StockController {
-    /*
-    @Autowired
-    private StockService stockService;
+
     @FXML
     private AnchorPane anchorPane;
     private final double[] coordinates = new double[2];
     @FXML
-    MFXTableView<Stock> table;
+    MFXTableView<StockDTO> table;
     @FXML
-    private ComboBox<Supplier> supplierDropDown;
+    private ComboBox<String> supplierDropDown;
     @FXML
     private MFXTextField quantity;
     @FXML
-    private MFXFilterComboBox<Stock> equipmentDropDown;
+    private MFXFilterComboBox<String> equipmentDropDown;
     @FXML
     private MFXButton minimizeButton;
+
+    private final SupplierService supplierService;
+    private final StockService stockService;
+
+    @Autowired
+    public StockController(SupplierService supplierService, StockService stockService) {
+        this.supplierService = supplierService;
+        this.stockService = stockService;
+    }
 
     @FXML
     private void initialize() throws SQLException, IOException {
@@ -58,10 +71,7 @@ public class StockController {
         minimizeButton.setOnAction(e ->
                 ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
         );
-
-        setEquipmentDropDown();
-        setTableEquipments();
-        setSupplierDropDown();
+        Platform.runLater(this::loadInitialData);
     }
 
     @FXML
@@ -74,49 +84,44 @@ public class StockController {
     }
 
     public void setTableEquipments() throws SQLException, IOException {
-        ObservableList<Stock> stockList = FXCollections.observableArrayList(stockService.listStock()).sorted(Comparator.comparing(Stock::getEquipmentName));
+        MFXTableColumn<StockDTO> equipmentName = new MFXTableColumn<>("Ferramenta", Comparator.comparing(StockDTO::getEquipmentName));
+        MFXTableColumn<StockDTO> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(StockDTO::getQuantity));
+        MFXTableColumn<StockDTO> supplierName = new MFXTableColumn<>("Fornecedor", Comparator.comparing(StockDTO::getSupplierName));
 
-        MFXTableColumn<Stock> equipmentName = new MFXTableColumn<>("Ferramenta", Comparator.comparing(Stock::getEquipmentName));
-        MFXTableColumn<Stock> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(Stock::getQuantity));
-        MFXTableColumn<Stock> supplierName = new MFXTableColumn<>("Fornecedor", Comparator.comparing(Stock::getSupplierName));
-
-        equipmentName.setRowCellFactory(Stock -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Stock::getEquipmentName));
-        quantity.setRowCellFactory(Stock -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Stock::getQuantity));
-        supplierName.setRowCellFactory(Stock -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Stock::getSupplierName));
+        equipmentName.setRowCellFactory(stock -> new MFXTableRowCell<>(StockDTO::getEquipmentName));
+        quantity.setRowCellFactory(stock -> new MFXTableRowCell<>(StockDTO::getQuantity));
+        supplierName.setRowCellFactory(stock -> new MFXTableRowCell<>(StockDTO::getSupplierName));
 
         equipmentName.setPrefWidth(300);
         quantity.setPrefWidth(150);
         supplierName.setPrefWidth(300);
 
+        table.getTableColumns().clear();
         table.getTableColumns().addAll(equipmentName, quantity, supplierName);
+
         table.getFilters().addAll(
-                new StringFilter<>("Ferramenta", Stock::getEquipmentName),
-                new IntegerFilter<>("Quantidade", Stock::getQuantity),
-                new StringFilter<>("Fornecedor", Stock::getSupplierName)
+                new StringFilter<>("Ferramenta", StockDTO::getEquipmentName),
+                new IntegerFilter<>("Quantidade", StockDTO::getQuantity),
+                new StringFilter<>("Fornecedor", StockDTO::getSupplierName)
         );
-        table.setItems(stockList);
+
+        table.setItems(dtolistBuilder());
     }
 
 
     public void setSupplierDropDown() throws SQLException {
-        supplierDropDown.setItems(FXCollections.observableList(stockService.selectSupplier()));
+        supplierDropDown.setItems(FXCollections.observableList(supplierService.selectSupplier()));
     }
 
     public void setEquipmentDropDown() throws SQLException {
-        ObservableList<Stock> stockNames = FXCollections.observableList(stockService.selectNames());
-        HashSet<String> uniqueEquipmentNames = new HashSet<>();
-        ObservableList<Stock> uniqueEquipmentsNames = FXCollections.observableArrayList();
+        ObservableList<String> uniqueEquipmentNames = FXCollections.observableArrayList(
+                new HashSet<>(stockService.getEquipmentNames())
+        ).sorted();
 
-        for (Stock stock : stockNames) {
-            String equipmentName = stock.getEquipmentName();
-            if (!uniqueEquipmentNames.contains(equipmentName)) {
-                uniqueEquipmentNames.add(equipmentName);
-                uniqueEquipmentsNames.add(stock);
-            }
-        }
-        equipmentDropDown.setItems(uniqueEquipmentsNames.sorted(Comparator.comparing(Stock::getEquipmentName)));
+        equipmentDropDown.setItems(uniqueEquipmentNames);
     }
 
+    @Transactional
     public void onIncludeButtonClick() {
         if (Objects.equals(String.valueOf(equipmentDropDown.getValue()), "")) {
             AlertUtils.showErrorAlert("Ocorreu um erro", "Insira um nome para a ferramenta!");
@@ -126,13 +131,9 @@ public class StockController {
             AlertUtils.showErrorAlert("Ocorreu um erro", "Insira uma quantidade valida!");
             return;
         }
-        try {
-            stockService.createOrUpdateStock(parseInt(quantity.getText()), equipmentDropDown.getText(), String.valueOf(supplierDropDown.getValue()));
-            table.setItems(FXCollections.observableArrayList(stockService.listStock()).sorted(Comparator.comparing(Stock::getEquipmentName)));
-            AlertUtils.showInfoAlert("Sucesso", "Equipamento inserido com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        stockService.updateOrCreateStock(equipmentDropDown.getText(), supplierService.findIdByName(supplierDropDown.getValue()), parseInt(quantity.getText()));
+        table.setItems(dtolistBuilder());
+        AlertUtils.showInfoAlert("Sucesso", "Equipamento inserido com sucesso!");
     }
 
     public void onCloseButtonClick() {
@@ -151,19 +152,53 @@ public class StockController {
             if (quantityResult.isPresent() && !quantityResult.get().isEmpty()) {
                 String inputText = quantityResult.get();
                 try {
-                    MultipleSelectionModel<Stock> selectionModel = (MultipleSelectionModel<Stock>) table.getSelectionModel();
-                    List<Stock> selectedItems = selectionModel.getSelectedValues();
+                    MultipleSelectionModel<StockDTO> selectionModel = (MultipleSelectionModel<StockDTO>) table.getSelectionModel();
+                    List<StockDTO> selectedItems = selectionModel.getSelectedValues();
 
-                    for (Stock item : selectedItems) {
-                        stockService.decreaseOrDeleteStock(Integer.parseInt(inputText), item.getEquipmentName(), item.getSupplierName());
+                    for (StockDTO item : selectedItems) {
+                        stockService.updateOrCreateStock(equipmentDropDown.getText(), supplierService.findIdByName(supplierDropDown.getValue()), parseInt(quantity.getText()));
                     }
                     AlertUtils.showInfoAlert("Estoque Alterado!", "Estoque alterado com sucesso!");
-                    table.setItems(FXCollections.observableArrayList(stockService.listStock()).sorted(Comparator.comparing(Stock::getEquipmentName)));
+                    table.setItems(dtolistBuilder());
                 } catch (NumberFormatException e) {
                     AlertUtils.showErrorAlert("Erro", "A quantidade inserida não é válida.");
                 }
             }
         }
     }
-     */
+
+    @Transactional(readOnly = true)
+    private StockDTO convertToDTO(Stock stock) {
+        return new StockDTO(
+                stock.getStockId().getEquipmentName(), // Assuming Equipment is a related entity
+                stock.getSupplier().getSupplierName(),               // Assuming Supplier has getName()
+                stock.getQuantity()
+        );
+    }
+    private ObservableList<StockDTO> dtolistBuilder() {
+        List<Stock> stockEntities = stockService.findAll();
+        return FXCollections.observableArrayList(
+                stockEntities.stream()
+                        .map(this::convertToDTO)
+                        .sorted(Comparator.comparing(StockDTO::getEquipmentName))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private void loadInitialData() {
+        try {
+            supplierDropDown.getItems().setAll(supplierService.selectSupplier());
+
+            List<String> equipments = stockService.getEquipmentNames();
+            if (equipments != null) {
+                equipmentDropDown.getItems().setAll(equipments);
+                equipmentDropDown.getItems().sort(String::compareTo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            supplierDropDown.getItems().clear();
+            equipmentDropDown.getItems().clear();
+        }
+    }
+
 }

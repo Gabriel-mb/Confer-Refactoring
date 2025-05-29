@@ -1,6 +1,8 @@
 package com.refactoring.conferUi.Services;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +29,15 @@ public class EquipmentsService {
     }
 
     public ObservableList<EquipmentDTO> listEquipmentsStatus() throws SQLException {
-        return FXCollections.observableArrayList(equipmentRepository.findAllEquipmentWithStatus());
+        List<EquipmentDTO> stored = equipmentRepository.findStoredEquipment();
+        List<EquipmentDTO> borrowed = equipmentRepository.findBorrowedEquipment();
+
+        List<EquipmentDTO> all = new ArrayList<>();
+        all.addAll(stored);
+        all.addAll(borrowed);
+        all.sort(Comparator.comparing(EquipmentDTO::getIdEquipment));
+
+        return FXCollections.observableArrayList(all);
     }
 
     public List<EquipmentDTO> readId(Integer id) {
