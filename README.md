@@ -41,6 +41,8 @@ Edite o arquivo src/main/resources/application.properties
 # Compilar e executar
 mvn spring-boot:run
 
+```
+
 🏗 Estrutura do Projeto
 
 src/
