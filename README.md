@@ -8,10 +8,6 @@
 
 Sistema completo para gestão de ferramentas, EPIs e consumíveis em ambientes industriais com controle de patrimônio e empréstimos.
 
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" width="800" alt="Dashboard do Sistema">
-</p>
-
 ## 📌 Funcionalidades Principais
 
 ### 🛡️ Módulo de EPIs
@@ -50,17 +46,15 @@ mvn spring-boot:run
 src/
 ├── main/
 │   ├── java/com/confer/
-│   │   ├── config/       # Configurações Spring
+│   │   ├── dao/          # Conexões com banco de dados
 │   │   ├── controllers/  # Lógica das interfaces
 │   │   ├── models/       # Entidades JPA
+│   │   ├── utils/        # Funções auxiliares 
 │   │   └── services/     # Regras de negócio
 │   └── resources/
-│       ├── static/       # CSS e imagens
-│       ├── templates/    # Arquivos FXML
-│       └── application.properties
-docs/
-├── screenshots/          # Capturas de tela
-└── database/             # Diagramas do banco
+│       ├── assets/       # Imagens
+│       ├── static/       # Arquivos FXML e JRXML
+└──     └── application.properties 
 
 
 📄 Licença
