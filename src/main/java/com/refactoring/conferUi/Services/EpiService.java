@@ -1,5 +1,6 @@
 package com.refactoring.conferUi.Services;
 
+import com.refactoring.conferUi.Model.DTO.EpiDTO;
 import com.refactoring.conferUi.Model.Entity.Epi;
 import com.refactoring.conferUi.dao.EpiRepository;
 import javafx.collections.FXCollections;
@@ -9,10 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EpiService {
@@ -24,25 +24,28 @@ public class EpiService {
         this.epiRepository = epiRepository;
     }
 
-    public void update(Epi epi) throws IOException {
-       epiRepository.save(epi);
+    public void update(EpiDTO epiDTO) {
+        if (epiDTO.getQuantity() < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        epiRepository.addToStock(epiDTO.getEpiName(), epiDTO.getNumCa(), epiDTO.getQuantity());
+    }
+
+    public void remove(String epiName, Integer numCa, Integer quantity) {
+        epiRepository.decreaseStock(epiName, numCa, quantity);
     }
 
 
-    public void remove(String epiName, Integer numCa, Date date) throws SQLException {
-        epiRepository.devolverEpiParaEstoque(epiName, numCa, date);
-    }
+    public ObservableList<EpiDTO> listStock() {
+        List<Epi> epiList = epiRepository.findAll();
+        List<EpiDTO> epiDTOList = epiList.stream()
+                .map(epi -> new EpiDTO(
+                        epi.getEpiId().getEpiName(),
+                        epi.getEpiId().getNumCa(),
+                        epi.getQuantity()
+                ))
+                .collect(Collectors.toList());
 
-
-    public ObservableList<Epi> listStock() throws SQLException {
-        return FXCollections.observableArrayList(epiRepository.findAll());
-    }
-
-    public Optional<Epi> searchEpi(Integer cA) {
-       return epiRepository.findById(cA);
-    }
-
-    public ObservableList<Optional<Epi>> episList(Integer id) {
-        return FXCollections.observableArrayList(epiRepository.findById(id));
+        return FXCollections.observableArrayList(epiDTOList);
     }
 }

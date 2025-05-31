@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -61,5 +62,36 @@ public class StockService {
 
     public List<String> getEquipmentNames() {
         return stockRepository.findAllEquipmentNames();
+    }
+
+    public List<StockDTO> findAllAsDTO() {
+        List<Stock> stocks = stockRepository.findAll();
+        return stocks.stream()
+                .map(stock -> new StockDTO(
+                        stock.getStockId().getEquipmentName(),
+                        stock.getSupplier().getSupplierName(), // This will work if fetched in same transaction
+                        stock.getQuantity()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public boolean removeStock(String equipmentName, int supplierId, int quantityToRemove) {
+        Optional<Stock> stockOpt = stockRepository.findByEquipmentNameAndSupplierId(equipmentName, supplierId);
+
+        if (stockOpt.isEmpty()) {
+            return false;
+        }
+
+        Stock stock = stockOpt.get();
+        int newQuantity = stock.getQuantity() - quantityToRemove;
+
+        if (newQuantity < 0) {
+            return false;
+        }
+
+        stock.setQuantity(newQuantity);
+        stockRepository.save(stock);
+        return true;
     }
 }

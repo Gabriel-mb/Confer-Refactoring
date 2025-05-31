@@ -70,15 +70,11 @@ public class InventoryController {
 
     @FXML
     private void initialize() throws SQLException, IOException {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
         for (Node node : anchorPane.getChildrenUnmodifiable()) {
             if (node instanceof TextField) {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
 
         setSupplierDropDown();
         setTableEquipments();
@@ -150,11 +146,6 @@ public class InventoryController {
         } catch (SQLException | NumberFormatException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @FXML
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     @FXML

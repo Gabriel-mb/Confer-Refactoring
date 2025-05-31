@@ -34,18 +34,11 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
     }
 
     @FXML
     private void handleMouseEvents(MouseEvent event) {
         NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     public void onLoginButtonClick(ActionEvent event) {

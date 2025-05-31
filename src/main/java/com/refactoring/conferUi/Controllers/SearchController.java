@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -38,13 +39,6 @@ public class SearchController {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     @FXML
@@ -84,14 +78,17 @@ public class SearchController {
     public void onInventoryButtonClick(ActionEvent event) throws IOException {
         navigateTo(event, InventoryController.class.getResource("/static/fxml/patrimony-view.fxml"), null);
     }
+
     @FXML
     public void onStockButtonClick(ActionEvent event) throws IOException {
-        navigateTo(event, StockController.class.getResource("/static/fxml/equipments-view.fxml"),null);
+        navigateTo(event, StockController.class.getResource("/static/fxml/equipments-view.fxml"), null);
     }
+
     @FXML
     public void onEpiButtonClick(ActionEvent event) throws IOException {
-        navigateTo(event, EpiStockController.class.getResource("/static/fxml/epis-view.fxml"),null);
+        navigateTo(event, EpiStockController.class.getResource("/static/fxml/epis-view.fxml"), null);
     }
+
     @FXML
     public void onEmployeeButtonClick(ActionEvent event) throws IOException {
         navigateTo(event, EmployeeController.class.getResource("/static/fxml/employee-view.fxml"), null);

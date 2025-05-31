@@ -1,5 +1,6 @@
 package com.refactoring.conferUi.Controllers;
 
+import com.refactoring.conferUi.Model.DTO.EpiDTO;
 import com.refactoring.conferUi.Model.Entity.Epi;
 import com.refactoring.conferUi.Services.EpiService;
 import com.refactoring.conferUi.Utils.AlertUtils;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,18 +30,18 @@ import java.util.*;
 import static java.lang.Integer.parseInt;
 
 @Component
-public class EpiStockController {/*
+public class EpiStockController {
     @Autowired
     private EpiService epiService;
     @FXML
     private AnchorPane anchorPane;
     private final double[] coordinates = new double[2];
     @FXML
-    MFXTableView<Epi> table;
+    MFXTableView<EpiDTO> table;
     @FXML
     private MFXTextField quantity;
     @FXML
-    private MFXFilterComboBox<Epi> epiDropDown;
+    private MFXFilterComboBox<String> epiDropDown;
     @FXML
     private MFXTextField numCa;
     @FXML
@@ -55,15 +57,15 @@ public class EpiStockController {/*
     }
 
     public void setTableEquipments() throws SQLException {
-        ObservableList<Epi> epiList = FXCollections.observableArrayList(epiService.listStock()).sorted(Comparator.comparing(Epi::getEpiName));
+        ObservableList<EpiDTO> epiList = FXCollections.observableArrayList(epiService.listStock()).sorted(Comparator.comparing(EpiDTO::getEpiName));
 
-        MFXTableColumn<Epi> epiName = new MFXTableColumn<>("Equipamentos", Comparator.comparing(Epi::getEpiName));
-        MFXTableColumn<Epi> numCa = new MFXTableColumn<>("C.A", Comparator.comparing(Epi::getNumCa));
-        MFXTableColumn<Epi> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(Epi::getQuantity));
+        MFXTableColumn<EpiDTO> epiName = new MFXTableColumn<>("Equipamentos", Comparator.comparing(EpiDTO::getEpiName));
+        MFXTableColumn<EpiDTO> numCa = new MFXTableColumn<>("C.A", Comparator.comparing(EpiDTO::getNumCa));
+        MFXTableColumn<EpiDTO> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(EpiDTO::getQuantity));
 
-        epiName.setRowCellFactory(epi -> new MFXTableRowCell<>(Epi::getEpiName));
-        numCa.setRowCellFactory(epi -> new MFXTableRowCell<>(Epi::getNumCa));
-        quantity.setRowCellFactory(epi -> new MFXTableRowCell<>(Epi::getQuantity));
+        epiName.setRowCellFactory(epi -> new MFXTableRowCell<>(EpiDTO::getEpiName));
+        numCa.setRowCellFactory(epi -> new MFXTableRowCell<>(EpiDTO::getNumCa));
+        quantity.setRowCellFactory(epi -> new MFXTableRowCell<>(EpiDTO::getQuantity));
 
         epiName.setPrefWidth(500);
         numCa.setPrefWidth(150);
@@ -71,67 +73,83 @@ public class EpiStockController {/*
 
         table.getTableColumns().addAll(epiName, numCa, quantity);
         table.getFilters().addAll(
-                new StringFilter<>("Epi", Epi::getEpiName),
-                new IntegerFilter<>("C.A", Epi::getNumCa)
+                new StringFilter<>("Epi", EpiDTO::getEpiName),
+                new IntegerFilter<>("C.A", EpiDTO::getNumCa)
         );
         table.setItems(epiList);
     }
 
     public void setEpiDropDown() throws SQLException {
         HashSet<String> uniqueEpiNames = new HashSet<>();
-        ObservableList<Epi> uniqueEpisNames = FXCollections.observableArrayList();
+        ObservableList<String> uniqueEpisNames = FXCollections.observableArrayList();
 
-        for (Epi epi : FXCollections.observableList(epiService.listStock())) {
+        for (EpiDTO epi : epiService.listStock()) {
             String epiName = epi.getEpiName();
             if (!uniqueEpiNames.contains(epiName)) {
                 uniqueEpiNames.add(epiName);
-                uniqueEpisNames.add(epi);
+                uniqueEpisNames.add(epiName);
             }
         }
-        uniqueEpisNames.sort((e1, e2) -> e1.getEpiName().compareToIgnoreCase(e2.getEpiName()));
+        uniqueEpisNames.sort(String::compareToIgnoreCase);
 
         epiDropDown.setItems(uniqueEpisNames);
+
+        epiDropDown.setConverter(new StringConverter<String>() {
+            @Override
+            public String toString(String object) {
+                return object;
+            }
+
+            @Override
+            public String fromString(String string) {
+                return string;
+            }
+        });
     }
 
     public void onIncludeButtonClick() {
-        if (Objects.equals(String.valueOf(epiDropDown.getValue()), "")) {
-            AlertUtils.showErrorAlert("Ocorreu um erro", "Insira um nome para o Epi!");
+        if (epiDropDown.getValue() == null || epiDropDown.getValue().isEmpty()) {
+            AlertUtils.showErrorAlert("Erro", "Selecione um EPI!");
             return;
         }
-        if (Objects.equals(quantity.getText(), "")) {
-            AlertUtils.showErrorAlert("Ocorreu um erro", "Insira uma quantidade valida!");
+        if (quantity.getText().isEmpty() || !quantity.getText().matches("\\d+")) {
+            AlertUtils.showErrorAlert("Erro", "Insira uma quantidade válida!");
             return;
         }
+
         try {
-            epiService.createOrUpdateStock(parseInt(quantity.getText()), epiDropDown.getText(), parseInt(numCa.getText()));
-            ObservableList<Epi> epiList = FXCollections.observableArrayList(epiService.listStock());
-            Collections.sort(epiList, Comparator.comparing(Epi::getEpiName));
+            int quantidadeAdicionar = parseInt(quantity.getText());
+            if (quantidadeAdicionar <= 0) {
+                AlertUtils.showErrorAlert("Erro", "A quantidade deve ser maior que zero!");
+                return;
+            }
+
+            epiService.update(new EpiDTO(
+                    epiDropDown.getValue(),
+                    parseInt(numCa.getText()),
+                    quantidadeAdicionar
+            ));
+            ObservableList<EpiDTO> epiList = epiService.listStock()
+                    .sorted(Comparator.comparing(EpiDTO::getEpiName));
             table.setItems(epiList);
-            AlertUtils.showInfoAlert("Sucesso", "Epi inserido com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            AlertUtils.showInfoAlert("Sucesso", "Estoque atualizado com sucesso!");
+            quantity.clear();  // Limpa o campo após a operação
+        } catch (Exception e) {
+            AlertUtils.showErrorAlert("Erro", "Ocorreu um erro: " + e.getMessage());
         }
     }
 
     @FXML
     private void initialize() throws SQLException {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
         for (Node node : anchorPane.getChildrenUnmodifiable()) {
             if (node instanceof TextField) {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
-
         setTableEquipments();
         setEpiDropDown();
         table.autosizeColumnsOnInitialization();
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     public void onRemoveButtonClick() throws SQLException, IOException {
@@ -147,19 +165,19 @@ public class EpiStockController {/*
 
             if (quantityResult.isPresent() && !quantityResult.get().isEmpty()) {
                 try {
-                    MultipleSelectionModel<Epi> selectionModel = (MultipleSelectionModel<Epi>) table.getSelectionModel();
-                    List<Epi> selectedItems = selectionModel.getSelectedValues();
+                    MultipleSelectionModel<EpiDTO> selectionModel = (MultipleSelectionModel<EpiDTO>) table.getSelectionModel();
+                    List<EpiDTO> selectedItems = selectionModel.getSelectedValues();
 
-                    for (Epi item : selectedItems) {
-                        epiService.decreaseOrDeleteStock(Integer.parseInt(quantityResult.get()), item.getEpiName(), item.getNumCa());
+                    for (EpiDTO item : selectedItems) {
+                        epiService.remove(item.getEpiName(), item.getNumCa(), Integer.parseInt(quantityResult.get()));
                     }
                     AlertUtils.showInfoAlert("Estoque Alterado!", "Estoque alterado com sucesso!");
-                    ObservableList<Epi> epiList = FXCollections.observableArrayList(epiService.listStock()).sorted(Comparator.comparing(Epi::getEpiName));
+                    ObservableList<EpiDTO> epiList = epiService.listStock().sorted(Comparator.comparing(EpiDTO::getEpiName));
                     table.setItems(epiList);
                 } catch (NumberFormatException e) {
                     AlertUtils.showErrorAlert("Erro", "A quantidade inserida não é válida.");
                 }
             }
         }
-    }*/
+    }
 }

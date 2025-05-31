@@ -54,20 +54,12 @@ public class EmployeeController {
 
     @FXML
     private void initialize() throws SQLException {
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
         setTableEmployees();
     }
 
     @FXML
     private void handleMouseEvents(MouseEvent event) {
         NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
-    }
-
-    @FXML
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     @FXML

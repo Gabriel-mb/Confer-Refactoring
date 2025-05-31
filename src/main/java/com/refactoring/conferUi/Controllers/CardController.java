@@ -117,9 +117,6 @@ public class CardController {
                 throw new RuntimeException(e);
             }
         });
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
         datePicker.setOnAction(event -> onDatePickerSelect());
         resetButton.setOnAction(event -> resetDatePicker());
         filteredItems = FXCollections.observableArrayList();
@@ -191,10 +188,6 @@ public class CardController {
 
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     @FXML

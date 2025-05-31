@@ -22,25 +22,23 @@ public class NavigationUtils {
     private static ApplicationContext applicationContext;
 
     private NavigationUtils(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+        NavigationUtils.applicationContext = applicationContext;
     }
 
     @FXML
-    public static void navigateTo(ActionEvent event, URL fxmlResource, Consumer<Object> controllerConsumer) throws IOException {
+    public static void navigateTo(ActionEvent event, URL fxmlResource, Consumer<Object> controllerConsumer)
+            throws IOException {
+
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         loader.setControllerFactory(applicationContext::getBean);
         Parent parent = loader.load();
 
         if (controllerConsumer != null) {
-            Object controller = loader.getController();
-            controllerConsumer.accept(controller);
+            controllerConsumer.accept(loader.getController());
         }
 
-        Scene scene = new Scene(parent);
-        scene.setFill(Color.TRANSPARENT);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(scene);
-        stage.show();
+        stage.getScene().setRoot(parent);
     }
 
     public static void handleAnchorPaneDrag(MouseEvent event, AnchorPane anchorPane, double[] coordinates) {

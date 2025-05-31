@@ -2,7 +2,6 @@ package com.refactoring.conferUi.Controllers;
 
 import com.refactoring.conferUi.Model.DTO.StockDTO;
 import com.refactoring.conferUi.Model.Entity.Stock;
-import com.refactoring.conferUi.Model.Entity.Supplier;
 import com.refactoring.conferUi.Services.StockService;
 import com.refactoring.conferUi.Services.SupplierService;
 import com.refactoring.conferUi.Utils.AlertUtils;
@@ -12,7 +11,6 @@ import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.selection.MultipleSelectionModel;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,11 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -62,16 +57,14 @@ public class StockController {
 
     @FXML
     private void initialize() throws SQLException, IOException {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
         for (Node node : anchorPane.getChildrenUnmodifiable()) {
             if (node instanceof TextField) {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
-        Platform.runLater(this::loadInitialData);
+        setTableEquipments();
+        setEquipmentDropDown();
+        setSupplierDropDown();
     }
 
     @FXML
@@ -83,7 +76,8 @@ public class StockController {
         NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
     }
 
-    public void setTableEquipments() throws SQLException, IOException {
+    @FXML
+    public void setTableEquipments() {
         MFXTableColumn<StockDTO> equipmentName = new MFXTableColumn<>("Ferramenta", Comparator.comparing(StockDTO::getEquipmentName));
         MFXTableColumn<StockDTO> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(StockDTO::getQuantity));
         MFXTableColumn<StockDTO> supplierName = new MFXTableColumn<>("Fornecedor", Comparator.comparing(StockDTO::getSupplierName));
@@ -109,11 +103,13 @@ public class StockController {
     }
 
 
+    @FXML
     public void setSupplierDropDown() throws SQLException {
         supplierDropDown.setItems(FXCollections.observableList(supplierService.selectSupplier()));
     }
 
-    public void setEquipmentDropDown() throws SQLException {
+    @FXML
+    public void setEquipmentDropDown() {
         ObservableList<String> uniqueEquipmentNames = FXCollections.observableArrayList(
                 new HashSet<>(stockService.getEquipmentNames())
         ).sorted();
@@ -121,7 +117,6 @@ public class StockController {
         equipmentDropDown.setItems(uniqueEquipmentNames);
     }
 
-    @Transactional
     public void onIncludeButtonClick() {
         if (Objects.equals(String.valueOf(equipmentDropDown.getValue()), "")) {
             AlertUtils.showErrorAlert("Ocorreu um erro", "Insira um nome para a ferramenta!");
@@ -136,11 +131,7 @@ public class StockController {
         AlertUtils.showInfoAlert("Sucesso", "Equipamento inserido com sucesso!");
     }
 
-    public void onCloseButtonClick() {
-        System.exit(0);
-    }
-
-    public void onRemoveButtonClick() throws SQLException, IOException {
+    public void onRemoveButtonClick() {
         Optional<ButtonType> result = AlertUtils.showWarningAlert("Tem certeza que deseja continuar?", "Esta ação não pode ser desfeita.");
 
         if (result.isPresent() && result.get() == ButtonType.YES) {
@@ -150,55 +141,48 @@ public class StockController {
             Optional<String> quantityResult = inputDialog.showAndWait();
 
             if (quantityResult.isPresent() && !quantityResult.get().isEmpty()) {
-                String inputText = quantityResult.get();
                 try {
+                    int quantityToRemove = parseInt(quantityResult.get());
+                    if (quantityToRemove <= 0) {
+                        AlertUtils.showErrorAlert("Erro", "A quantidade deve ser maior que zero.");
+                        return;
+                    }
+
                     MultipleSelectionModel<StockDTO> selectionModel = (MultipleSelectionModel<StockDTO>) table.getSelectionModel();
                     List<StockDTO> selectedItems = selectionModel.getSelectedValues();
 
                     for (StockDTO item : selectedItems) {
-                        stockService.updateOrCreateStock(equipmentDropDown.getText(), supplierService.findIdByName(supplierDropDown.getValue()), parseInt(quantity.getText()));
+                        int supplierId = supplierService.findIdByName(item.getSupplierName());
+                        boolean success = stockService.removeStock(
+                                item.getEquipmentName(),
+                                supplierId,
+                                quantityToRemove
+                        );
+
+                        if (!success) {
+                            AlertUtils.showErrorAlert("Erro",
+                                    "Não foi possível remover a quantidade desejada de " + item.getEquipmentName() +
+                                            "\nVerifique se há estoque suficiente.");
+                        }
                     }
-                    AlertUtils.showInfoAlert("Estoque Alterado!", "Estoque alterado com sucesso!");
+
                     table.setItems(dtolistBuilder());
+                    AlertUtils.showInfoAlert("Sucesso", "Operação de remoção concluída!");
+
                 } catch (NumberFormatException e) {
-                    AlertUtils.showErrorAlert("Erro", "A quantidade inserida não é válida.");
+                    AlertUtils.showErrorAlert("Erro", "Quantidade inválida. Digite um número válido.");
+                } catch (Exception e) {
+                    AlertUtils.showErrorAlert("Erro", "Ocorreu um erro inesperado: " + e.getMessage());
                 }
             }
         }
     }
 
-    @Transactional(readOnly = true)
-    private StockDTO convertToDTO(Stock stock) {
-        return new StockDTO(
-                stock.getStockId().getEquipmentName(), // Assuming Equipment is a related entity
-                stock.getSupplier().getSupplierName(),               // Assuming Supplier has getName()
-                stock.getQuantity()
-        );
-    }
     private ObservableList<StockDTO> dtolistBuilder() {
-        List<Stock> stockEntities = stockService.findAll();
         return FXCollections.observableArrayList(
-                stockEntities.stream()
-                        .map(this::convertToDTO)
+                stockService.findAllAsDTO().stream()
                         .sorted(Comparator.comparing(StockDTO::getEquipmentName))
                         .collect(Collectors.toList())
         );
     }
-
-    private void loadInitialData() {
-        try {
-            supplierDropDown.getItems().setAll(supplierService.selectSupplier());
-
-            List<String> equipments = stockService.getEquipmentNames();
-            if (equipments != null) {
-                equipmentDropDown.getItems().setAll(equipments);
-                equipmentDropDown.getItems().sort(String::compareTo);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            supplierDropDown.getItems().clear();
-            equipmentDropDown.getItems().clear();
-        }
-    }
-
 }

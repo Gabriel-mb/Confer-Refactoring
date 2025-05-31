@@ -1,29 +1,46 @@
 package com.refactoring.conferUi.dao;
 
+import com.refactoring.conferUi.Model.DTO.EpiDTO;
 import com.refactoring.conferUi.Model.Entity.Epi;
+import com.refactoring.conferUi.Model.Entity.EpiId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 
-public interface EpiRepository extends JpaRepository<Epi, Integer> {
+public interface EpiRepository extends JpaRepository<Epi, EpiId> {
+
 
     @Modifying
-    @Query(nativeQuery = true, value = """
-        UPDATE epis e, episBorrowed eb
-        SET e.quantity = e.quantity + eb.quantity,
-            eb.quantity = 0
-        WHERE e.epiName = eb.epiName\s
-          AND e.numCa = eb.numCa
-          AND eb.epiName = :epiName\s
-          AND eb.numCa = :numCa\s
-          AND DATE(eb.date) = :date
-       \s""")
-    void devolverEpiParaEstoque(
+    @Transactional
+    @Query("UPDATE Epi e SET e.quantity = e.quantity - :quantity " +
+            "WHERE e.epiId.epiName = :epiName AND e.epiId.numCa = :numCa " +
+            "AND e.quantity >= :quantity AND :quantity > 0")
+    void decreaseStock(
             @Param("epiName") String epiName,
             @Param("numCa") Integer numCa,
-            @Param("date") Date date);
+            @Param("quantity") Integer quantity);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Epi e SET e.quantity = e.quantity + :quantity " +
+            "WHERE e.epiId.epiName = :epiName AND e.epiId.numCa = :numCa")
+    void addToStock(
+            @Param("epiName") String epiName,
+            @Param("numCa") Integer numCa,
+            @Param("quantity") Integer quantity);
+
+    default void updateFromDto(EpiDTO dto) {
+        EpiId id = new EpiId(dto.getEpiName(), dto.getNumCa());
+        Epi epi = this.findById(id).orElse(new Epi(id, 0));
+        epi.setQuantity(dto.getQuantity());
+        this.save(epi);
+    }
+
+    default void addToStock(EpiDTO epiDTO) {
+        addToStock(epiDTO.getEpiName(), epiDTO.getNumCa(), epiDTO.getQuantity());
+    }
 }

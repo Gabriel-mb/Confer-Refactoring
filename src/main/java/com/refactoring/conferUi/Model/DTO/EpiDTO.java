@@ -17,10 +17,17 @@ public class EpiDTO {
         this.employeeId = employeeId;
     }
 
+    public EpiDTO(String epiName, Integer numCa, Integer quantity) {
+        this.epiName = epiName;
+        this.numCa = numCa;
+        this.quantity = quantity;
+    }
+
     // Getters (sem setters para imutabilidade)
     public String getEpiName() { return epiName; }
     public Integer getNumCa() { return numCa; }
     public Integer getQuantity() { return quantity; }
     public Date getDate() { return date; }
     public Integer getEmployeeId() { return employeeId; }
+
 }

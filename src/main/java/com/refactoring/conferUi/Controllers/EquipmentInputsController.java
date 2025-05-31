@@ -193,9 +193,6 @@ public class EquipmentInputsController {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
         date.setConverterSupplier(converterSupplier);
-        minimizeButton.setOnAction(e ->
-                ( (Stage) ( (Button) e.getSource() ).getScene().getWindow() ).setIconified(true)
-        );
     }
 
     public void anchorPane_dragged(MouseEvent event) {
@@ -208,10 +205,6 @@ public class EquipmentInputsController {
     public void anchorPane_pressed(MouseEvent event) {
         x = event.getSceneX();
         y = event.getSceneY();
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     public void onMenuButtonClick(MouseEvent event) throws IOException {

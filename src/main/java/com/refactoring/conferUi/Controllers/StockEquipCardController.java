@@ -78,9 +78,6 @@ public class StockEquipCardController {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).setIconified(true)
-        );
         datePicker.setOnAction(event -> onDatePickerSelect());
         resetButton.setOnAction(event -> resetDatePicker());
         filteredItems = FXCollections.observableArrayList();
@@ -189,10 +186,6 @@ public class StockEquipCardController {
         EmployeeService employeeService = new EmployeeService(connection);
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());*/
-    }
-
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
 
     public void anchorPane_dragged(MouseEvent event) {

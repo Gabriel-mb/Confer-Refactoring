@@ -33,6 +33,7 @@ public class ConferApplication extends Application {
         Scene scene = new Scene(root);
 
         primaryStage.setTitle("Confer Application");
+        primaryStage.setMaximized(true);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

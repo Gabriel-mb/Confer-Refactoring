@@ -74,9 +74,6 @@ public class EpiCardController {
                 node.setFocusTraversable(false);
             }
         }
-        minimizeButton.setOnAction(e ->
-                ( (Stage) ( (Button) e.getSource() ).getScene().getWindow() ).setIconified(true)
-        );
     }
 
     public void onSearchButtonClick(ActionEvent event) throws SQLException, IOException {
@@ -158,9 +155,6 @@ public class EpiCardController {
 
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());*/
-    }
-    public void onCloseButtonClick() {
-        System.exit(0);
     }
     public void anchorPane_dragged(MouseEvent event) {
         Stage stage = (Stage) anchorPane.getScene().getWindow();
