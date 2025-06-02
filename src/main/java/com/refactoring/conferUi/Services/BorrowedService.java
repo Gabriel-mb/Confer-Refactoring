@@ -34,9 +34,9 @@ public class BorrowedService {
         this.stockBorrowedRepository = stockBorrowedRepository;
     }
 
-    public void create(EquipmentBorrowed equipmentBorrowed) throws SQLException {
-        borrowedRepository.save(equipmentBorrowed);
-    }
+    /*public void create(BorrowedDTO borrowedDTO) throws SQLException {
+        borrowedRepository.save(borrowedDTO);
+    }*/
 
     public void delete(Integer idEquip, Integer supplierId) throws SQLException {
         borrowedRepository.deleteByEquipmentIdAndSupplierId(idEquip, supplierId);

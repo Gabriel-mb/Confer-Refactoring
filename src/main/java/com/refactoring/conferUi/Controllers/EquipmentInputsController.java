@@ -1,11 +1,25 @@
 package com.refactoring.conferUi.Controllers;
 
 import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
+import com.refactoring.conferUi.Model.DTO.EquipmentDTO;
+import com.refactoring.conferUi.Model.Entity.Employee;
+import com.refactoring.conferUi.Model.Entity.Equipment;
 import com.refactoring.conferUi.Model.Entity.EquipmentBorrowed;
+import com.refactoring.conferUi.Services.BorrowedService;
+import com.refactoring.conferUi.Services.EquipmentsService;
+import com.refactoring.conferUi.Services.SupplierService;
+import com.refactoring.conferUi.Utils.AlertUtils;
+import com.refactoring.conferUi.Utils.NavigationUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
+import io.github.palexdev.materialfx.controls.MFXTableColumn;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
+import io.github.palexdev.materialfx.filter.IntegerFilter;
+import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -26,14 +41,19 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import static java.lang.Integer.parseInt;
 
+@Component
 public class EquipmentInputsController {
     ObservableList<BorrowedDTO> borrowingsList = FXCollections.observableArrayList();
     private Stage stage;
@@ -52,102 +72,81 @@ public class EquipmentInputsController {
     @FXML
     private ComboBox<String> equipmentName;
     @FXML
-    private TableView<BorrowedDTO> table;
-    @FXML
-    private TableColumn<EquipmentBorrowed, String> nameColumn;
-    @FXML
-    private TableColumn<EquipmentBorrowed, Integer> idColumn;
-    @FXML
-    private TableColumn<EquipmentBorrowed, java.util.Date> dateColumn;
-    @FXML
-    private TableColumn<EquipmentBorrowed, String> supplierColumn;
-    @FXML
-    private MFXButton minimizeButton;
-    private Double x;
-    private Double y;
+    private MFXTableView<BorrowedDTO> table;
+    private final double[] coordinates = new double[2];
     private Boolean confirmation = false;
     private String equipName;
     private String supplierName;
 
+    private final EquipmentsService equipmentsService;
+    private final BorrowedService borrowedService;
+    private final SupplierService supplierService;
 
-    /*public void onSearchButtonClick() throws SQLException, IOException {
+    @Autowired
+    public EquipmentInputsController(EquipmentsService equipmentsService, BorrowedService borrowedService, SupplierService supplierService) {
+        this.equipmentsService = equipmentsService;
+        this.borrowedService = borrowedService;
+        this.supplierService = supplierService;
+    }
+
+    @FXML
+    private void initialize() {
+        for (Node node : anchorPane.getChildrenUnmodifiable()) {
+            if (node instanceof TextField) {
+                node.setFocusTraversable(false);
+            }
+        }
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
+        date.setConverterSupplier(converterSupplier);
+    }
+
+    public void onSearchButtonClick() throws SQLException, IOException {
         if (Objects.equals(equipmentIdInput.getText(), "")) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Por favor insira uma matrícula adequada!");
-            alert.showAndWait();
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Por favor insira uma matrícula adequada!");
             return;
         }
-        Connection connection = new ConnectionDAO().connect();
-        EquipmentsService equipmentsService = new EquipmentsService(connection);
-        List<Equipment> equipmentList = equipmentsService.readId(parseInt(equipmentIdInput.getText()));
+        List<EquipmentDTO> equipmentList = equipmentsService.readId(parseInt(equipmentIdInput.getText()));
         if (equipmentList.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Nenhum equipamento encontrado!");
-            alert.showAndWait();
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Nenhum equipamento encontrado!");
             return;
         } else {
             equipmentName.getItems().clear();
-            for (Equipment i : equipmentList) {
-                equipmentName.getItems().addAll(i.getSupplierName() + " - " + i.getName());
+            for (EquipmentDTO i : equipmentList) {
+                equipmentName.getItems().addAll(i.getSupplierName() + " - " + i.getNameEquip());
             }
         }
         equipmentName.getSelectionModel().selectFirst();
-    }*/
+    }
 
-    /*public void onIncludeButtonClick() throws SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        BorrowedService borrowedService = new BorrowedService(connection);
-        splitSelection();
-        for (EquipmentBorrowed equipmentBorrowed : table.getItems()) {
-            Integer id = idColumn.getCellData(equipmentBorrowed);
-            String supplier = supplierColumn.getCellData(equipmentBorrowed);
-            if (parseInt(equipmentIdInput.getText()) == id && Objects.equals(supplierName, supplier)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro");
-                alert.setHeaderText("Ocorreu um erro");
-                alert.setContentText("Ferramenta já cadastrada!");
-                alert.showAndWait();
-
+    public void onIncludeButtonClick() throws SQLException, IOException {
+        /*splitSelection();
+        for (BorrowedDTO borrowedDTO : table.getItems()) {
+            if (parseInt(equipmentIdInput.getText()) == borrowedDTO.getIdEquipment() && Objects.equals(supplierName, borrowedDTO.getSupplierName())) {
+                AlertUtils.showErrorAlert("Ocorreu um erro", "Ferramenta já cadastrada!");
                 equipmentName.getItems().clear();
                 equipmentIdInput.setText("");
                 date.setValue(null);
-
                 return;
             }
         }
         if (equipmentName.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Por favor insira uma matrícula válida");
-            alert.showAndWait();
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Por favor insira uma matrícula válida");
         } else if (date.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Por favor insira uma data válida");
-            alert.showAndWait();
-        } else if (borrowedService.searchBorrowed(parseInt(equipmentIdInput.getText()), borrowedService.getSupplierId(supplierName))) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ferramenta já Alocada");
-            alert.setContentText("Por favor selecione outra ferramenta!");
-            alert.showAndWait();
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Por favor insira uma data válida");
+        } else if (borrowedService.searchBorrowed(parseInt(equipmentIdInput.getText()), supplierService.findIdByName(supplierName))) {
+            AlertUtils.showErrorAlert("Ferramenta já Alocada", "Por favor selecione outra ferramenta!");
         } else {
-            borrowingsList.add(new EquipmentBorrowed(equipName, parseInt(equipmentIdInput.getText()), Date.valueOf(date.getValue()), supplierName, borrowedService.getSupplierId(supplierName)));
-            borrowedService.create(new EquipmentBorrowed(parseInt(idLabel.getText()), parseInt(equipmentIdInput.getText()), Date.valueOf(date.getValue()), borrowedService.getSupplierId(supplierName)));
+            borrowingsList.add(new BorrowedDTO(equipmentName.getValue(), parseInt(equipmentIdInput.getText()), Date.valueOf(date.getValue()),supplierName));
+            borrowedService.create(new BorrowedDTO(parseInt(equipmentIdInput.getText()), parseInt(idLabel.getText()), supplierService.findIdByName(supplierName), Date.valueOf(date.getValue())));
 
             table.setItems(borrowingsList);
 
             equipmentName.getItems().clear();
             equipmentIdInput.setText("");
             date.setValue(null);
-        }
-    }*/
+        }*/
+    }
 
     private void splitSelection() {
         String selection = equipmentName.getValue();
@@ -157,12 +156,10 @@ public class EquipmentInputsController {
         equipName = sections[1];
     }
 
-    /*public void removeData(Integer idEquip, String supplierName) throws SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        BorrowedService borrowedService = new BorrowedService(connection);
-        HistoryDAO historyDAO = new HistoryDAO(connection);
-        if (borrowedService.readId(idEquip) != null) borrowedService.delete(idEquip, historyDAO.getSupplierId(supplierName));
-    }*/
+    public void removeData(Integer idEquip, String supplierName) throws SQLException {
+        if (borrowedService.read(idEquip, supplierService.findIdByName(supplierName)) != null)
+            borrowedService.delete(idEquip, supplierService.findIdByName(supplierName));
+    }
 
     public void setEmployee(String id, String name) {
         idLabel.setText(id);
@@ -170,89 +167,59 @@ public class EquipmentInputsController {
     }
 
     public void setTable(ObservableList<BorrowedDTO> list, Boolean confirm) {
-        nameColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, String>("equipmentName"));
-        idColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, Integer>("idEquipment"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<EquipmentBorrowed, java.util.Date>("date"));
-        supplierColumn.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
+        table.getTableColumns().clear();
+        table.getItems().clear();
 
+        MFXTableColumn<BorrowedDTO> idEquipment = new MFXTableColumn<>("Patrimônio",
+                Comparator.comparing(BorrowedDTO::getIdEquipment));
+
+        MFXTableColumn<BorrowedDTO> supplierName = new MFXTableColumn<>("Fornecedor",
+                Comparator.comparing(BorrowedDTO::getSupplierName));
+
+        MFXTableColumn<BorrowedDTO> equipmentName = new MFXTableColumn<>("Ferramenta",
+                Comparator.comparing(BorrowedDTO::getEquipmentName));
+
+        MFXTableColumn<BorrowedDTO> date = new MFXTableColumn<>("Data",
+                Comparator.comparing(BorrowedDTO::getDate));
+
+        idEquipment.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getIdEquipment));
+        supplierName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getSupplierName));
+        equipmentName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getEquipmentName));
+        date.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getDate));
+
+        table.getFilters().addAll(
+                new StringFilter<>("Ferramenta", BorrowedDTO::getEquipmentName),
+                new IntegerFilter<>("Patrimônio", BorrowedDTO::getIdEquipment),
+                new StringFilter<>("Fornecedor", BorrowedDTO::getSupplierName)
+        );
+
+        equipmentName.setPrefWidth(350);
+        table.getTableColumns().addAll(idEquipment, supplierName, equipmentName, date);
         table.setItems(list);
-        confirmation = confirm;
-
-        borrowingsList.addAll(list);
     }
 
     @FXML
-    private void initialize() {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
+    private void handleMouseEvents(MouseEvent event) {
+        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
+    }
+
+    public void onMenuButtonClick(ActionEvent event) throws IOException {
+        NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
+    }
+
+    public void onDevolutionClick(ActionEvent event) {
+        /// //////////////////////
+    }
+
+    public void onBackButtonClick(ActionEvent event) throws IOException, SQLException {
+        NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {
+            if (controller instanceof CardController cardController) {
+                try {
+                    cardController.setTableEmployee(idLabel.getText());
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-        //formata a data do datepicker
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
-        date.setConverterSupplier(converterSupplier);
-    }
-
-    public void anchorPane_dragged(MouseEvent event) {
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-        stage.setY(event.getScreenY() - y);
-        stage.setX(event.getScreenX() - x);
-
-    }
-
-    public void anchorPane_pressed(MouseEvent event) {
-        x = event.getSceneX();
-        y = event.getSceneY();
-    }
-
-    public void onMenuButtonClick(MouseEvent event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("search-view.fxml")));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
-    }
-
-    /*public void onDevolutionClick(ActionEvent event) throws IOException {
-        //remover o dado do borrowed e gerar dado no histórico
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("devolution-view.fxml"));
-        Parent root = loader.load();
-        DevolutionController devolutionController = loader.getController();
-
-        SelectionModel<EquipmentBorrowed> selectionModel = table.getSelectionModel();
-        EquipmentBorrowed itemSelected = selectionModel.getSelectedItem();
-
-        if (itemSelected == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Ocorreu um erro");
-            alert.setContentText("Por favor selecione um item que quer devolver.");
-            alert.showAndWait();
-            return;
-        }
-        devolutionController.setData(nameLabel.getText(), idLabel.getText(), String.valueOf(itemSelected.getIdEquipment()), itemSelected.getEquipmentName(), String.valueOf(itemSelected.getDate()), itemSelected.getSupplierName());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
-    }*/
-
-    public void onBackButtonClick(MouseEvent event) throws IOException, SQLException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("patCard-view.fxml"));
-        Parent root = loader.load();
-
-        CardController cardController = loader.getController();
-        cardController.setTableEmployee(idLabel.getText());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        });
     }
 }
