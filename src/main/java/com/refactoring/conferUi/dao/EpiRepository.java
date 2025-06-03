@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-
 public interface EpiRepository extends JpaRepository<Epi, EpiId> {
 
 
@@ -42,5 +40,10 @@ public interface EpiRepository extends JpaRepository<Epi, EpiId> {
 
     default void addToStock(EpiDTO epiDTO) {
         addToStock(epiDTO.getEpiName(), epiDTO.getNumCa(), epiDTO.getQuantity());
+    }
+
+    default Epi searchEpi(String epiName, Integer numCa) {
+        EpiId id = new EpiId(epiName, numCa);
+        return this.findById(id).orElse(new Epi(id, null));
     }
 }

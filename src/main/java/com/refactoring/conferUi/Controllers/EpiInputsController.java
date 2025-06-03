@@ -1,28 +1,28 @@
 package com.refactoring.conferUi.Controllers;
 
+import com.refactoring.conferUi.Model.DTO.EpiDTO;
 import com.refactoring.conferUi.Model.Entity.Epi;
 import com.refactoring.conferUi.Services.EpiService;
+import com.refactoring.conferUi.Utils.AlertUtils;
+import com.refactoring.conferUi.Utils.NavigationUtils;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -30,13 +30,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static com.refactoring.conferUi.Utils.NavigationUtils.navigateTo;
 import static java.lang.Integer.parseInt;
 
-public class EpiInputsController {/*
-    ObservableList<Epi> episList;
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
+@Component
+public class EpiInputsController {
     @FXML
     private Label nameLabel;
     @FXML
@@ -50,98 +48,98 @@ public class EpiInputsController {/*
     @FXML
     private MFXFilterComboBox epiName;
     @FXML
-    private MFXTableView<Epi> table;
+    private MFXTableView<EpiDTO> table;
 
     private String epiSeparatedName;
 
     private Integer caSeparated;
 
-    @FXML
-    private MFXButton minimizeButton;
-    private Double x;
-    private Double y;
+    private final double[] coordinates = new double[2];
 
+    ObservableList<EpiDTO> episList;
+
+    @Autowired
+    private EpiService epiService;
+
+    @FXML
+    private void initialize() throws SQLException, IOException {
+        for (Node node : anchorPane.getChildrenUnmodifiable()) {
+            if (node instanceof TextField) {
+                node.setFocusTraversable(false);
+            }
+        }
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
+        date.setConverterSupplier(converterSupplier);
+    }
+
+    @FXML
+    private void handleMouseEvents(MouseEvent event) {
+        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
+    }
 
     public void onIncludeButtonClick() throws SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        EpiService epiService = new EpiService(connection);
         splitSelection();
         String selectedEquipment = epiSeparatedName;
         Integer numCa = caSeparated;
         Integer quantity = Integer.valueOf(epiQuantity.getText());
         Date selectedDate = Date.valueOf(date.getValue());
 
-        Boolean terminate = false;
         if (epiName.getValue() == null) {
-            showErrorAlert("Erro", "Ocorreu um erro", "Selecione um equipamento!");
-        } else if (date.getValue() == null) {
-            showErrorAlert("Erro", "Ocorreu um erro", "Selecione uma data válida!");
-        } else if (epiQuantity == null) {
-            showErrorAlert("Erro", "Ocorreu um erro", "Selecione uma Quantidade!");
-        } else {
-            Epi epi = epiService.searchEpi(caSeparated);
-            if (epi.getQuantity() == null) {
-                showErrorAlert("Erro", "Estoque vazio!", "Não há estoque deste equipamento.");
-                return;
-            } else {
-                int quantityToBorrow = quantity;
-                int currentStock = epi.getQuantity();
-
-                if (currentStock < quantityToBorrow) {
-                    showErrorAlert("Erro", "Estoque insuficiente", "Não há estoque suficiente para emprestar a quantidade desejada do equipamento.");
-                    return;
-                }
-            }
-            ObservableList<Epi> episBorrowed = epiService.episListBorrowed(parseInt(idLabel.getText()));
-            for (Epi item : episBorrowed) {
-                if (item.getNumCa().equals(numCa) && item.getDate().equals(selectedDate)) {
-                    int updatedStock = epi.getQuantity() - parseInt(epiQuantity.getText());
-                    epiService.updateStock(item.getEpiName(), item.getNumCa(), updatedStock);
-                    int updatedQuantity = parseInt(epiQuantity.getText()) + item.getQuantity();
-                    epiService.updateBorrowedEpi(updatedQuantity, item.getEpiName(), item.getNumCa(), Date.valueOf(date.getValue()), Integer.valueOf(idLabel.getText()));
-                    terminate = true;
-                }
-            }
-            if (!terminate) {
-                int updatedStock = epi.getQuantity() - parseInt(epiQuantity.getText());
-                epiService.updateStock(epi.getEpiName(), epi.getNumCa(), updatedStock);
-                epiService.createBorrowed(new Epi(parseInt(epiQuantity.getText()), epi.getNumCa(), epi.getEpiName(), Date.valueOf(date.getValue())), parseInt(idLabel.getText()));
-                episBorrowed.add(new Epi(parseInt(epiQuantity.getText()), epi.getNumCa(), epi.getEpiName(), Date.valueOf(date.getValue()), Integer.valueOf(idLabel.getText())));
-                table.setItems(episBorrowed);
-            }
-            table.setItems(epiService.episListBorrowed(parseInt(idLabel.getText())));
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Selecione um equipamento!");
+            return;
         }
+        if (date.getValue() == null) {
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Selecione uma data válida!");
+            return;
+        }
+        if (epiQuantity.getText().isEmpty()) {
+            AlertUtils.showErrorAlert("Ocorreu um erro", "Selecione uma Quantidade!");
+            return;
+        }
+
+        Epi epi = epiService.searchEpi(epiSeparatedName, caSeparated);
+        if (epi.getQuantity() == null || epi.getQuantity() < quantity) {
+            AlertUtils.showErrorAlert("Estoque insuficiente", "Não há estoque suficiente para emprestar a quantidade desejada.");
+            return;
+        }
+
+        // Primeiro subtrai do estoque
+        epiService.remove(epiSeparatedName, caSeparated, quantity);
+
+        // Depois trata o empréstimo
+        ObservableList<EpiDTO> episBorrowed = epiService.episListBorrowed(parseInt(idLabel.getText()));
+        boolean exists = false;
+
+        for (EpiDTO item : episBorrowed) {
+            if (item.getNumCa().equals(numCa) && item.getDate().equals(selectedDate)) {
+                epiService.updateBorrowedEpi(item.getQuantity() + quantity, numCa, Integer.valueOf(idLabel.getText()));
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            EpiDTO newBorrowed = new EpiDTO(epiSeparatedName, numCa, quantity, selectedDate, parseInt(idLabel.getText()));
+            epiService.create(newBorrowed);
+        }
+
+        table.setItems(epiService.episListBorrowed(parseInt(idLabel.getText())));
     }
 
     public void onRemoveButtonClick() throws SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        EpiService epiService = new EpiService(connection);
-        List<Epi> selectedBorrowedList = (List<Epi>) table.getSelectionModel().getSelectedValues();
+        List<EpiDTO> selectedBorrowedList = (List<EpiDTO>) table.getSelectionModel().getSelectedValues();
 
         if (selectedBorrowedList != null && !selectedBorrowedList.isEmpty()) {
-            for (Epi selectedBorrowed : selectedBorrowedList) {
-                episList = epiService.episListBorrowed(parseInt(idLabel.getText()));
-                if (epiService.checkDate(selectedBorrowed)) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Confirmação");
-                    alert.setHeaderText("Tem certeza que deseja continuar?");
-                    alert.setContentText("Esta ação não pode ser desfeita.");
-                    ButtonType yesButton = new ButtonType("Sim");
-                    ButtonType cancelButton = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(cancelButton, yesButton);
-                    Optional<ButtonType> result = alert.showAndWait();
+            for (EpiDTO selectedBorrowed : selectedBorrowedList) {
+                epiService.addToStock(selectedBorrowed.getEpiName(), selectedBorrowed.getNumCa(), selectedBorrowed.getQuantity());
 
-                    if (result.isPresent() && result.get() == yesButton) {
-                        epiService.remove(selectedBorrowed.getEpiName(), selectedBorrowed.getNumCa(), selectedBorrowed.getDate());
-                        episList.remove(selectedBorrowed);
-                        table.getItems().remove(selectedBorrowed);
-                        showSucessAlert("Sucesso", "Ferramenta Removida", "Ferramenta retornada ao estoque.");
-                    }
-                } else {
-                    episList.remove(selectedBorrowed);
-                    table.getItems().remove(selectedBorrowed);
-                    showSucessAlert("Sucesso", "Ferramenta Removida", "Ferramenta removida com sucesso.");
-                }
+                epiService.removeBorrowed(selectedBorrowed);
+
+                episList = epiService.episListBorrowed(parseInt(idLabel.getText()));
+                table.getItems().remove(selectedBorrowed);
+
+                AlertUtils.showInfoAlert("Sucesso", "Ferramenta removida e retornada ao estoque.");
             }
         }
     }
@@ -152,23 +150,21 @@ public class EpiInputsController {/*
     }
 
     public void setTable() throws SQLException, IOException {
-        Connection connection = new ConnectionDAO().connect();
-        EpiService epiService = new EpiService(connection);
-        ObservableList<Epi> epiList = FXCollections.observableList(epiService.episListBorrowed(Integer.valueOf(idLabel.getText())));
+        ObservableList<EpiDTO> epiList = FXCollections.observableList(epiService.episListBorrowed(Integer.valueOf(idLabel.getText())));
 
         // Ordena a lista de estoque pelo nome do equipamento em ordem alfabética
-        Collections.sort(epiList, Comparator.comparing(Epi::getEpiName));
+        Collections.sort(epiList, Comparator.comparing(EpiDTO::getEpiName));
 
-        MFXTableColumn<Epi> epiName = new MFXTableColumn<>("Equipamentos", Comparator.comparing(Epi::getEpiName));
-        MFXTableColumn<Epi> numCa = new MFXTableColumn<>("C.A", Comparator.comparing(Epi::getNumCa));
-        MFXTableColumn<Epi> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(Epi::getQuantity));
-        MFXTableColumn<Epi> date = new MFXTableColumn<>("Date", Comparator.comparing(Epi::getDate));
+        MFXTableColumn<EpiDTO> epiName = new MFXTableColumn<>("Equipamentos", Comparator.comparing(EpiDTO::getEpiName));
+        MFXTableColumn<EpiDTO> numCa = new MFXTableColumn<>("C.A", Comparator.comparing(EpiDTO::getNumCa));
+        MFXTableColumn<EpiDTO> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(EpiDTO::getQuantity));
+        MFXTableColumn<EpiDTO> date = new MFXTableColumn<>("Date", Comparator.comparing(EpiDTO::getDate));
 
 
-        epiName.setRowCellFactory(Epi -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Epi::getEpiName));
-        numCa.setRowCellFactory(Epi -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Epi::getNumCa));
-        quantity.setRowCellFactory(Epi -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Epi::getQuantity));
-        date.setRowCellFactory(Epi -> new MFXTableRowCell<>(com.refactoring.conferUi.Model.Entity.Epi::getDate));
+        epiName.setRowCellFactory(Epi -> new MFXTableRowCell<>(EpiDTO::getEpiName));
+        numCa.setRowCellFactory(Epi -> new MFXTableRowCell<>(EpiDTO::getNumCa));
+        quantity.setRowCellFactory(Epi -> new MFXTableRowCell<>(EpiDTO::getQuantity));
+        date.setRowCellFactory(Epi -> new MFXTableRowCell<>(EpiDTO::getDate));
 
         epiName.setPrefWidth(500);
         numCa.setPrefWidth(150);
@@ -177,101 +173,45 @@ public class EpiInputsController {/*
 
         table.getTableColumns().addAll(epiName, numCa, quantity, date);
         table.getFilters().addAll(
-                new StringFilter<>("Epi", Epi::getEpiName),
-                new IntegerFilter<>("C.A", Epi::getNumCa)
+                new StringFilter<>("Epi", EpiDTO::getEpiName),
+                new IntegerFilter<>("C.A", EpiDTO::getNumCa)
         );
         table.setItems(epiList);
     }
 
     public void setEpiDropDown() throws SQLException, IOException {
-
-        Connection connection = new ConnectionDAO().connect();
-        EpiService epiService = new EpiService(connection);
-        ObservableList<Epi> epiNames = FXCollections.observableList(epiService.listStock());
-        // Usamos um HashSet temporário para armazenar os objetos Stock únicos com base no nome do equipamento
+        ObservableList<EpiDTO> epiNames = FXCollections.observableList(epiService.listStock());
         HashSet<String> uniqueEpiNames = new HashSet<>();
-        ObservableList<Epi> uniqueEpisNames = FXCollections.observableArrayList();
+        ObservableList<EpiDTO> uniqueEpisNames = FXCollections.observableArrayList();
 
-        for (Epi epi : epiNames) {
+        for (EpiDTO epi : epiNames) {
             String epiName = epi.getEpiName();
             if (!uniqueEpiNames.contains(epiName)) {
                 uniqueEpiNames.add(epiName);
                 uniqueEpisNames.add(epi);
             }
         }
-        // Ordena a lista de objetos Stock em ordem alfabética
         uniqueEpisNames.sort((e1, e2) -> e1.getEpiName().compareToIgnoreCase(e2.getEpiName()));
 
-        for (Epi i : uniqueEpisNames) {
+        for (EpiDTO i : uniqueEpisNames) {
             epiName.getItems().addAll(i.getEpiName() + " - C.A: " + i.getNumCa());
         }
     }
 
+    public void onMenuButtonClick(ActionEvent event) throws IOException {
+        NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
+    }
 
-    @FXML
-    private void initialize() throws SQLException, IOException {
-        // percorre todos os nós da cena e define o foco como não transversável para os TextFields
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
+    public void onBackButtonClick(ActionEvent event) throws IOException, SQLException {
+        navigateTo(event, EpiCardController.class.getResource("/static/fxml/epiCard-view.fxml"), controller -> {
+            if (controller instanceof EpiCardController epiCardController) {
+                try {
+                    epiCardController.setTableEmployee(idLabel.getText());
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-        //formata a data do datepicker
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
-        date.setConverterSupplier(converterSupplier);
-    }
-
-    public void anchorPane_dragged(MouseEvent event) {
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-        stage.setY(event.getScreenY() - y);
-        stage.setX(event.getScreenX() - x);
-
-    }
-
-    public void anchorPane_pressed(MouseEvent event) {
-        x = event.getSceneX();
-        y = event.getSceneY();
-    }
-
-    public void onMenuButtonClick(MouseEvent event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("search-view.fxml")));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
-    }
-
-
-    private void showErrorAlert(String title, String headerText, String contentText) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        alert.showAndWait();
-    }
-
-    private void showSucessAlert(String title, String headerText, String contentText) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        alert.showAndWait();
-    }
-
-    public void onBackButtonClick(MouseEvent event) throws IOException, SQLException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("epiCard-view.fxml"));
-        Parent root = loader.load();
-
-        EpiCardController epiCardController = loader.getController();
-        epiCardController.setTableEmployee(idLabel.getText());
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
-        stage.show();
+        });
     }
 
     private void splitSelection() {
@@ -281,5 +221,4 @@ public class EpiInputsController {/*
         epiSeparatedName = sections[0];
         caSeparated = Integer.valueOf(sections[1]);
     }
-    */
 }

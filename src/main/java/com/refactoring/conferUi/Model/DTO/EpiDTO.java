@@ -17,6 +17,19 @@ public class EpiDTO {
         this.employeeId = employeeId;
     }
 
+    public EpiDTO(String epiName, Integer numCa, Date date) {
+        this.epiName = epiName;
+        this.numCa = numCa;
+        this.date = date;
+    }
+
+    public EpiDTO(String epiName, Integer numCa, Integer quantity, Date date) {
+        this.epiName = epiName;
+        this.numCa = numCa;
+        this.quantity = quantity;
+        this.date = date;
+    }
+
     public EpiDTO(String epiName, Integer numCa, Integer quantity) {
         this.epiName = epiName;
         this.numCa = numCa;

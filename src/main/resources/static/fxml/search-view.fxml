@@ -106,7 +106,7 @@
          </graphic>
       </MFXButton>
       <Line endX="-100.0" endY="-48.0" layoutX="241.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <Label alignment="CENTER" layoutX="318.0" layoutY="428.0" prefHeight="55.0" prefWidth="412.0" style="-fx-border-radius: 11;" text="OU ESCANEIE O CODIGO DE BARRAS" textAlignment="CENTER" textFill="#0e1c6b">
+      <Label alignment="CENTER" layoutX="318.0" layoutY="428.0" prefHeight="55.0" prefWidth="412.0" style="-fx-border-radius: 11;" text=" OU PASSE O CARTÃO NO LEITOR" textAlignment="CENTER" textFill="#0e1c6b">
          <font>
             <Font name="System Bold" size="23.0" />
          </font>

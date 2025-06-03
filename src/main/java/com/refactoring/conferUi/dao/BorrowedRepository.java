@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +34,15 @@ public interface BorrowedRepository extends JpaRepository<EquipmentBorrowed, Int
             "WHERE b.employee.idEmployee = :employeeId " +
             "ORDER BY b.date DESC")
     List<BorrowedDTO> findBorrowedDetailsByEmployee(@Param("employeeId") Integer employeeId);
+
+    @Query("SELECT COUNT(b) > 0 FROM EquipmentBorrowed b " +
+            "WHERE b.employee.idEmployee = :employeeId " +
+            "AND b.equipment.idEquipment = :equipmentId " +
+            "AND b.equipment.supplier.supplierId = :supplierId " +
+            "AND b.date = :date")
+    boolean existsSimilarBorrowing(
+            @Param("employeeId") int employeeId,
+            @Param("equipmentId") int equipmentId,
+            @Param("supplierId") int supplierId,
+            @Param("date") Date date);
 }

@@ -1,5 +1,6 @@
 package com.refactoring.conferUi.dao;
 
+import com.refactoring.conferUi.Model.DTO.EpiDTO;
 import com.refactoring.conferUi.Model.Entity.EpiBorrowed;
 import com.refactoring.conferUi.Model.Entity.EpiId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,5 +35,12 @@ public interface EpiBorrowedRepository extends JpaRepository<EpiBorrowed, EpiId>
             @Param("numCa") Integer numCa,
             @Param("date") Date date);
 
-    EpiBorrowed findById_EpiNameAndId_NumCa(String epiName, Integer numCa);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM EpiBorrowed e WHERE e.id.epiName = :epiName AND e.id.numCa = :numCa AND e.date = :date")
+    void removeBorrowed(
+            @Param("epiName") String epiName,
+            @Param("numCa") Integer numCa,
+            @Param("date") Date date
+    );
 }

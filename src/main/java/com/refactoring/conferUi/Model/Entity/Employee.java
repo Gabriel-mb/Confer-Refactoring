@@ -21,6 +21,10 @@ public class Employee {
     public Employee() {
     }
 
+    public Employee(Integer idEmployee) {
+        this.idEmployee = idEmployee;
+    }
+
     public Employee(Integer idEmployee, String name) {
         this.idEmployee = idEmployee;
         this.name = name;

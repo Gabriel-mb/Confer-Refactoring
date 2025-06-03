@@ -2,15 +2,11 @@ package com.refactoring.conferUi.Controllers;
 
 import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
 import com.refactoring.conferUi.Model.DTO.EquipmentDTO;
-import com.refactoring.conferUi.Model.Entity.Employee;
-import com.refactoring.conferUi.Model.Entity.Equipment;
-import com.refactoring.conferUi.Model.Entity.EquipmentBorrowed;
 import com.refactoring.conferUi.Services.BorrowedService;
 import com.refactoring.conferUi.Services.EquipmentsService;
 import com.refactoring.conferUi.Services.SupplierService;
 import com.refactoring.conferUi.Utils.AlertUtils;
 import com.refactoring.conferUi.Utils.NavigationUtils;
-import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
@@ -21,24 +17,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
 import javafx.scene.input.MouseEvent;
 
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +43,6 @@ import static java.lang.Integer.parseInt;
 
 @Component
 public class EquipmentInputsController {
-    ObservableList<BorrowedDTO> borrowingsList = FXCollections.observableArrayList();
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
     @FXML
     private Label nameLabel;
     @FXML
@@ -73,8 +57,8 @@ public class EquipmentInputsController {
     private ComboBox<String> equipmentName;
     @FXML
     private MFXTableView<BorrowedDTO> table;
+    ObservableList<BorrowedDTO> borrowingsList = FXCollections.observableArrayList();
     private final double[] coordinates = new double[2];
-    private Boolean confirmation = false;
     private String equipName;
     private String supplierName;
 
@@ -119,33 +103,39 @@ public class EquipmentInputsController {
         equipmentName.getSelectionModel().selectFirst();
     }
 
-    public void onIncludeButtonClick() throws SQLException, IOException {
-        /*splitSelection();
-        for (BorrowedDTO borrowedDTO : table.getItems()) {
-            if (parseInt(equipmentIdInput.getText()) == borrowedDTO.getIdEquipment() && Objects.equals(supplierName, borrowedDTO.getSupplierName())) {
-                AlertUtils.showErrorAlert("Ocorreu um erro", "Ferramenta já cadastrada!");
-                equipmentName.getItems().clear();
-                equipmentIdInput.setText("");
-                date.setValue(null);
+    public void onIncludeButtonClick() {
+        try {
+            splitSelection();
+
+            int equipmentId = parseInt(equipmentIdInput.getText());
+            int supplierId = supplierService.findIdByName(supplierName);
+            Date borrowDate = Date.valueOf(date.getValue());
+
+
+            if (borrowingsList.stream().anyMatch(dto ->
+                    dto.getIdEquipment() == equipmentId &&
+                            dto.getSupplierName().equals(supplierName)) ||
+                    borrowedService.searchBorrowed(equipmentId, supplierId)) {
+                AlertUtils.showErrorAlert("Erro", "Ferramenta já cadastrada!");
                 return;
             }
+
+            BorrowedDTO newItem = new BorrowedDTO(equipName, equipmentId, borrowDate, supplierName);
+            borrowingsList.add(newItem);
+            borrowedService.create(new BorrowedDTO(equipmentId, parseInt(idLabel.getText()), supplierId, borrowDate));
+
+            table.setItems(borrowingsList); // Atualiza a visualização
+            clearForm();
+
+        } catch (Exception e) {
+            AlertUtils.showErrorAlert("Erro", e.getMessage());
         }
-        if (equipmentName.getValue() == null) {
-            AlertUtils.showErrorAlert("Ocorreu um erro", "Por favor insira uma matrícula válida");
-        } else if (date.getValue() == null) {
-            AlertUtils.showErrorAlert("Ocorreu um erro", "Por favor insira uma data válida");
-        } else if (borrowedService.searchBorrowed(parseInt(equipmentIdInput.getText()), supplierService.findIdByName(supplierName))) {
-            AlertUtils.showErrorAlert("Ferramenta já Alocada", "Por favor selecione outra ferramenta!");
-        } else {
-            borrowingsList.add(new BorrowedDTO(equipmentName.getValue(), parseInt(equipmentIdInput.getText()), Date.valueOf(date.getValue()),supplierName));
-            borrowedService.create(new BorrowedDTO(parseInt(equipmentIdInput.getText()), parseInt(idLabel.getText()), supplierService.findIdByName(supplierName), Date.valueOf(date.getValue())));
+    }
 
-            table.setItems(borrowingsList);
-
-            equipmentName.getItems().clear();
-            equipmentIdInput.setText("");
-            date.setValue(null);
-        }*/
+    private void clearForm() {
+        equipmentName.getItems().clear();
+        equipmentIdInput.clear();
+        date.setValue(null);
     }
 
     private void splitSelection() {
@@ -212,7 +202,7 @@ public class EquipmentInputsController {
     }
 
     public void onBackButtonClick(ActionEvent event) throws IOException, SQLException {
-        NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {
+        NavigationUtils.navigateTo(event, CardController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {
             if (controller instanceof CardController cardController) {
                 try {
                     cardController.setTableEmployee(idLabel.getText());

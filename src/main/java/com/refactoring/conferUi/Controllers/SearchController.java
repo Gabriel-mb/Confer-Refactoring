@@ -91,10 +91,10 @@ public class SearchController {
                 return;
             }
             try {
-                stopListener();
                 NavigationUtils.navigateTo(event, CardController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {
                     if (controller instanceof CardController cardController) {
                         try {
+                            stopListener();
                             cardController.setTableEmployee(id);
                         } catch (SQLException | IOException e) {
                             throw new RuntimeException(e);

@@ -23,12 +23,10 @@ public class CardReaderListener implements Runnable {
     public void run() {
         try {
             while (running) {
-                System.out.println("Aguardando cartão...");
-                terminal.waitForCardPresent(1000); // aguarda cartão até 1s
+                terminal.waitForCardPresent(1000);
                 if (!running) break;
 
                 if (!terminal.isCardPresent()) {
-                    // cartão não está mais presente, continua o loop para esperar o próximo
                     continue;
                 }
 
@@ -50,11 +48,10 @@ public class CardReaderListener implements Runnable {
                         Matcher m = p.matcher(text);
                         if (m.find()) {
                             String employeeId = m.group();
-                            System.out.println("Número lido: " + employeeId);
                             onEmployeeIdRead.accept(employeeId);
                         }
                     } else {
-                        System.out.println("Falha na autenticação dos blocos 4 ou 5!");
+                       AlertUtils.showInfoAlert("Tente Novamente!", "Cartão retirado rapido demais!");
                     }
                     card.disconnect(false);
 
@@ -62,10 +59,9 @@ public class CardReaderListener implements Runnable {
                     System.out.println("Erro ao acessar o cartão: " + e.getMessage());
                 }
 
-                System.out.println("Aguardando cartão ser removido...");
                 terminal.waitForCardAbsent(1000); // aguarda até 2s
 
-                Thread.sleep(1000); // evita loop muito rápido
+                Thread.sleep(1000);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 
@@ -21,6 +22,7 @@ import java.util.function.Consumer;
 public class NavigationUtils {
     private static ApplicationContext applicationContext;
 
+    @Autowired
     private NavigationUtils(ApplicationContext applicationContext) {
         NavigationUtils.applicationContext = applicationContext;
     }

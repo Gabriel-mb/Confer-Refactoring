@@ -19,7 +19,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#anchorPane_dragged" onMousePressed="#anchorPane_pressed" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app_epi.EpiInputsController">
+<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleMouseEvents" onMousePressed="#handleMouseEvents" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.EpiInputsController">
    <children>
       <Label fx:id="nameLabel" layoutX="163.0" layoutY="93.0" prefHeight="28.0" prefWidth="274.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 0 0 0 4;">
          <font>
@@ -78,9 +78,9 @@
             </DropShadow>
          </effect>
       </Rectangle>
-      <MFXButton contentDisplay="TOP" layoutX="179.0" layoutY="4.0" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
+      <MFXButton contentDisplay="TOP" layoutX="179.0" layoutY="4.0" onAction="#onMenuButtonClick" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
          <graphic>
-            <ImageView fitHeight="35.0" fitWidth="34.0" onMouseClicked="#onMenuButtonClick">
+            <ImageView disable="true" fitHeight="35.0" fitWidth="34.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -97,9 +97,9 @@
          </cursor>
       </MFXButton>
       <Line endX="-100.0" endY="-48.0" layoutX="269.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <MFXButton contentDisplay="TOP" layoutX="97.0" layoutY="4.0" onMouseClicked="#onBackButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Voltar" textAlignment="CENTER" textFill="WHITE">
+      <MFXButton contentDisplay="TOP" layoutX="97.0" layoutY="4.0" onAction="#onBackButtonClick" onMouseClicked="#onBackButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Voltar" textAlignment="CENTER" textFill="WHITE">
          <graphic>
-            <ImageView fitHeight="35.0" fitWidth="34.0" onMouseClicked="#onBackButtonClick">
+            <ImageView disable="true" fitHeight="35.0" fitWidth="34.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>

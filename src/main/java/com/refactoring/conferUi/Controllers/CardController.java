@@ -46,10 +46,6 @@ import static java.lang.Integer.parseInt;
 
 @Controller
 public class CardController {
-
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
     @FXML
     private Label employeeId;
     @FXML
@@ -60,8 +56,6 @@ public class CardController {
     private AnchorPane anchorPane;
     @FXML
     private MFXTableView<BorrowedDTO> table;
-    @FXML
-    private MFXButton minimizeButton;
     @FXML
     private MFXDatePicker datePicker;
     @FXML
@@ -91,7 +85,7 @@ public class CardController {
         }
         newEmployeeId.setOnAction(event -> {
             try {
-                Employee employee = employeeService.readId(parseInt(employeeId.getText()));
+                Employee employee = employeeService.readId(parseInt(newEmployeeId.getText()));
 
                 if (employee == null) {
                     showErrorAlert("Nenhum funcionário encontrado!", "Tente Novamente!");
@@ -190,7 +184,7 @@ public class CardController {
     }
 
     public void onModifyButtonClick (ActionEvent event) throws IOException {
-        navigateTo(event, CardController.class.getResource("/static/fxml/patInputsModify-view.fxml"), controller -> {
+        navigateTo(event, EquipmentInputsController.class.getResource("/static/fxml/patInputsModify-view.fxml"), controller -> {
             if (controller instanceof EquipmentInputsController equipmentInputsController) {
                 equipmentInputsController.setEmployee(employeeId.getText(), nameLabel.getText());
                 equipmentInputsController.setTable(borrowingsList, true);
@@ -227,7 +221,7 @@ public class CardController {
     }
 
    public void onEquipButtonClick(ActionEvent event) throws IOException {
-       navigateTo(event, CardController.class.getResource("/static/fxml/equipCard-view.fxml"), controller -> {
+       navigateTo(event, StockEquipCardController.class.getResource("/static/fxml/equipCard-view.fxml"), controller -> {
            if (controller instanceof StockEquipCardController stockEquipCardController) {
                try {
                    stockEquipCardController.setTableEmployee(employeeId.getText());
@@ -239,7 +233,7 @@ public class CardController {
     }
 
     public void onEpiButtonClick(ActionEvent event) throws IOException {
-        navigateTo(event, CardController.class.getResource("/static/fxml/epiCard-view.fxml"), controller -> {
+        navigateTo(event, EpiCardController.class.getResource("/static/fxml/epiCard-view.fxml"), controller -> {
             if (controller instanceof EpiCardController epiCardController) {
                 try {
                     epiCardController.setTableEmployee(employeeId.getText());

@@ -26,6 +26,22 @@ public class BorrowedDTO {
         this.date = date;
     }
 
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
     public String getEquipmentName() {
         return equipmentName;
     }
