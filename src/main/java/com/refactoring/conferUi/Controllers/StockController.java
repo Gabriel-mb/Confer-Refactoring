@@ -15,10 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,9 +30,6 @@ import static java.lang.Integer.parseInt;
 public class StockController {
 
     @FXML
-    private AnchorPane anchorPane;
-    private final double[] coordinates = new double[2];
-    @FXML
     MFXTableView<StockDTO> table;
     @FXML
     private ComboBox<String> supplierDropDown;
@@ -43,8 +37,6 @@ public class StockController {
     private MFXTextField quantity;
     @FXML
     private MFXFilterComboBox<String> equipmentDropDown;
-    @FXML
-    private MFXButton minimizeButton;
 
     private final SupplierService supplierService;
     private final StockService stockService;
@@ -57,19 +49,9 @@ public class StockController {
 
     @FXML
     private void initialize() throws SQLException, IOException {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
         setTableEquipments();
         setEquipmentDropDown();
         setSupplierDropDown();
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onMenuButtonClick(ActionEvent event) throws IOException {

@@ -43,21 +43,17 @@ import static java.lang.Integer.valueOf;
 
 @Component
 public class InventoryController {
-    @FXML
-    private AnchorPane anchorPane;
-    private final double[] coordinates = new double[2];
 
     @FXML
     MFXTableView<EquipmentDTO> table;
-
     @FXML
     private ComboBox<String> supplierDropDown;
     @FXML
     private MFXTextField idEquipment;
     @FXML
     private MFXTextField name;
-    @FXML
-    private MFXButton minimizeButton;
+
+    private final double[] coordinates = new double[2];
 
     private final EquipmentsService equipmentsService;
     private final SupplierService supplierService;
@@ -69,21 +65,10 @@ public class InventoryController {
     }
 
     @FXML
-    private void initialize() throws SQLException, IOException {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
-
+    private void initialize() throws SQLException {
         setSupplierDropDown();
         setTableEquipments();
         table.autosizeColumnsOnInitialization();
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     @FXML
@@ -111,6 +96,7 @@ public class InventoryController {
             return dateValue != null ? dateFormat.format(dateValue) : " ";
         }));
         nameEquipColumn.setPrefWidth(300);
+        nameEmployeeColumn.setPrefWidth(300);
 
         table.getTableColumns().addAll(idColumn, nameEquipColumn, nameSupplier, statusColumn, nameEmployeeColumn, dateColumn);
         table.getFilters().addAll(

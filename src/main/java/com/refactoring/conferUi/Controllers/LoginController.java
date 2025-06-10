@@ -22,23 +22,12 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
     @FXML
-    private AnchorPane anchorPane;
-    @FXML
     private TextField nameInput;
     @FXML
     private PasswordField passwordInput;
-    @FXML
-    private MFXButton minimizeButton;
-
-    private final double[] coordinates = new double[2];
 
     @FXML
     private void initialize() {
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onLoginButtonClick(ActionEvent event) {

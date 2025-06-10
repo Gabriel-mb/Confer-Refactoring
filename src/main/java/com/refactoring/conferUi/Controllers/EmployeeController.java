@@ -41,25 +41,15 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     @FXML
-    private AnchorPane anchorPane;
-    private final double[] coordinates = new double[2];
-    @FXML
     MFXTableView<Employee> table;
     @FXML
     private MFXTextField idEmployee;
     @FXML
     private MFXTextField employeeName;
-    @FXML
-    private MFXButton minimizeButton;
 
     @FXML
     private void initialize() throws SQLException {
         setTableEmployees();
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     @FXML

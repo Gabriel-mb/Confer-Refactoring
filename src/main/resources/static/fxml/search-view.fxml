@@ -2,12 +2,18 @@
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
@@ -15,137 +21,161 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleMouseEvents" onMousePressed="#handleMouseEvents" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.SearchController">
+<GridPane alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.SearchController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="640.0" minWidth="10.0" prefWidth="640.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="640.0" minWidth="10.0" prefWidth="640.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="640.0" minWidth="10.0" prefWidth="640.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+   </rowConstraints>
    <children>
-      <Label alignment="CENTER" layoutX="377.0" layoutY="292.0" prefHeight="55.0" prefWidth="293.0" style="-fx-border-radius: 11;" text="DIGITE UMA MATRÍCULA" textAlignment="CENTER" textFill="#0e1c6b">
-         <font>
-            <Font name="System Bold" size="23.0" />
-         </font>
-      </Label>
-      <MFXTextField fx:id="employeeId" alignment="CENTER" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" layoutX="311.0" layoutY="355.0" prefHeight="55.0" prefWidth="424.0" style="-fx-border-color: #0e1c6b; -fx-border-radius: 11; -fx-background-radius: 11; -fx-border-width: 2;" textLimit="8">
-         <font>
-            <Font size="32.0" />
-         </font>
-         <effect>
-            <DropShadow height="26.86" offsetX="4.0" offsetY="3.0" radius="13.6625" width="29.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </MFXTextField>
-      <MFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="669.0" layoutY="355.0" onAction="#onSearchButtonClick" prefHeight="59.0" prefWidth="46.0" rippleAnimateShadow="true" rippleColor="WHITE" style="-fx-background-radius: 11; -fx-background-color: transparent;" text=" " textFill="#ffffff00">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <graphic>
-            <ImageView fitHeight="42.0" fitWidth="42.0" onMouseClicked="#onSearchButtonClick">
-               <Image url="@../../assets/search-2906.png" />
-            </ImageView>
-         </graphic>
-      </MFXButton>
-      <Rectangle arcHeight="32.0" arcWidth="27.0" height="85.0" layoutX="50.0" layoutY="-11.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="405.0">
-         <fill>
-            <LinearGradient endX="1.0" endY="1.0">
-               <stops>
-                  <Stop>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="369.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <Label alignment="CENTER" prefHeight="55.0" prefWidth="670.0" style="-fx-border-radius: 11;" text="DIGITE UMA MATRÍCULA" textAlignment="CENTER" textFill="#0e1c6b">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="61.0" prefWidth="369.0">
+               <children>
+                  <MFXTextField fx:id="employeeId" alignment="CENTER" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" prefHeight="59.0" prefWidth="229.0" style="-fx-border-color: #0e1c6b; -fx-border-radius: 11; -fx-background-radius: 11; -fx-border-width: 2;" textLimit="8">
+                     <font>
+                        <Font size="32.0" />
+                     </font>
+                     <effect>
+                        <DropShadow height="26.86" offsetX="4.0" offsetY="3.0" radius="13.6625" width="29.79">
+                           <color>
+                              <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                  </MFXTextField>
+                  <MFXButton alignment="CENTER" contentDisplay="CENTER" onAction="#onSearchButtonClick" prefHeight="59.0" prefWidth="46.0" rippleAnimateShadow="true" rippleColor="WHITE" snapToPixel="false" style="-fx-background-radius: 11; -fx-background-color: transparent;" text=" " textFill="#ffffff00">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="42.0" fitWidth="42.0" onMouseClicked="#onSearchButtonClick">
+                           <Image url="@../../assets/search-2906.png" />
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </graphic>
+                  </MFXButton>
+               </children>
+            </HBox>
+            <Label alignment="CENTER" prefHeight="55.0" prefWidth="672.0" style="-fx-border-radius: 11;" text=" OU PASSE O CARTÃO NO LEITOR" textAlignment="CENTER" textFill="#0e1c6b">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="256.0" prefWidth="316.0" style="-fx-background-radius: 15;">
+         <children>
+            <Rectangle arcHeight="32.0" arcWidth="27.0" height="85.0" layoutX="9.0" layoutY="-12.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="314.0">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </fill>
+               <effect>
+                  <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
                      <color>
-                        <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                        <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
                      </color>
-                  </Stop>
-                  <Stop offset="1.0">
-                     <color>
-                        <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
-                     </color>
-                  </Stop>
-               </stops>
-            </LinearGradient>
-         </fill>
-         <effect>
-            <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
-               <color>
-                  <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Rectangle>
-      <MFXButton fx:id="employeeList" alignment="CENTER" contentDisplay="TOP" layoutX="52.0" layoutY="3.0" onAction="#onEmployeeButtonClick" prefHeight="66.0" prefWidth="90.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Funcionários" textFill="WHITE">
-         <graphic>
-            <ImageView fitHeight="30.0" fitWidth="30.0">
-               <image>
-                  <Image url="@../../assets/group-profile-users.png" />
-               </image>
+                  </DropShadow>
+               </effect>
+            </Rectangle>
+            <MFXButton fx:id="employeeList" alignment="CENTER" contentDisplay="TOP" layoutX="7.0" layoutY="3.0" onAction="#onEmployeeButtonClick" prefHeight="66.0" prefWidth="90.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Funcionários" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0">
+                     <image>
+                        <Image url="@../../assets/group-profile-users.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </ImageView>
-         </graphic>
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </MFXButton>
-      <MFXButton contentDisplay="TOP" layoutX="137.0" layoutY="5.0" onAction="#onInventoryButtonClick" prefHeight="61.0" prefWidth="90.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Patrimônios" textAlignment="CENTER" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <graphic>
-            <ImageView fitHeight="32.0" fitWidth="32.0">
-               <image>
-                  <Image url="@../../assets/wrench.png" />
-               </image>
+            </MFXButton>
+            <MFXButton contentDisplay="TOP" layoutX="92.0" layoutY="5.0" onAction="#onInventoryButtonClick" prefHeight="61.0" prefWidth="90.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Patrimônios" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </ImageView>
-         </graphic>
-      </MFXButton>
-      <Line endX="-100.0" endY="-48.0" layoutX="241.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <Label alignment="CENTER" layoutX="318.0" layoutY="428.0" prefHeight="55.0" prefWidth="412.0" style="-fx-border-radius: 11;" text=" OU PASSE O CARTÃO NO LEITOR" textAlignment="CENTER" textFill="#0e1c6b">
-         <font>
-            <Font name="System Bold" size="23.0" />
-         </font>
-      </Label>
-      <Line endX="-100.0" endY="-48.0" layoutX="400.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <MFXButton contentDisplay="TOP" layoutX="307.0" layoutY="5.0" onAction="#onStockButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Estoque" textAlignment="CENTER" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <graphic>
-            <ImageView fitHeight="32.0" fitWidth="35.0">
-               <image>
-                  <Image url="@../../assets/carton-box.png" />
-               </image>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0">
+                     <image>
+                        <Image url="@../../assets/wrench.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+            </MFXButton>
+            <Line endX="-100.0" endY="-48.0" layoutX="195.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
+            <MFXButton contentDisplay="TOP" layoutX="180.0" layoutY="5.0" onAction="#onStockButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Estoque" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </ImageView>
-         </graphic>
-      </MFXButton>
-      <Line endX="-100.0" endY="-48.0" layoutX="327.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <Line endX="-100.0" endY="-48.0" layoutX="478.0" layoutY="53.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
-      <MFXButton fx:id="epiStockButton" contentDisplay="TOP" layoutX="381.0" layoutY="2.0" onAction="#onEpiButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="EPI's" textAlignment="CENTER" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <graphic>
-            <ImageView fitHeight="36.0" fitWidth="36.0">
-               <image>
-                  <Image url="@../../assets/protection-gloves (1).png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </MFXButton>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="35.0">
+                     <image>
+                        <Image url="@../../assets/carton-box.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+            </MFXButton>
+            <Line endX="-100.0" endY="-48.0" layoutX="281.0" layoutY="54.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
+            <Line endX="-100.0" endY="-48.0" layoutX="348.0" layoutY="53.0" startX="-100.0" startY="10.0" stroke="WHITE" strokeLineCap="ROUND" />
+            <MFXButton fx:id="epiStockButton" contentDisplay="TOP" layoutX="250.0" layoutY="2.0" onAction="#onEpiButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="EPI's" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="36.0">
+                     <image>
+                        <Image url="@../../assets/protection-gloves (1).png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </MFXButton>
+         </children>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</GridPane>

@@ -48,8 +48,6 @@ public class EpiCardController {
     @FXML
     private MFXTableView<EpiDTO> table;
 
-    private final double[] coordinates = new double[2];
-
     private final EpiService epiService;
     private final EmployeeService employeeService;
 
@@ -61,11 +59,6 @@ public class EpiCardController {
 
     @FXML
     private void initialize() {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
     }
 
     public void onSearchButtonClick() throws SQLException, IOException {
@@ -119,11 +112,6 @@ public class EpiCardController {
 
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onModifyButtonClick(ActionEvent event) throws IOException, SQLException {

@@ -54,28 +54,16 @@ public class EpiInputsController {
 
     private Integer caSeparated;
 
-    private final double[] coordinates = new double[2];
-
     ObservableList<EpiDTO> episList;
 
     @Autowired
     private EpiService epiService;
 
     @FXML
-    private void initialize() throws SQLException, IOException {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
+    private void initialize() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
         date.setConverterSupplier(converterSupplier);
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onIncludeButtonClick() throws SQLException, IOException {
@@ -104,10 +92,8 @@ public class EpiInputsController {
             return;
         }
 
-        // Primeiro subtrai do estoque
         epiService.remove(epiSeparatedName, caSeparated, quantity);
 
-        // Depois trata o empréstimo
         ObservableList<EpiDTO> episBorrowed = epiService.episListBorrowed(parseInt(idLabel.getText()));
         boolean exists = false;
 
@@ -152,7 +138,6 @@ public class EpiInputsController {
     public void setTable() throws SQLException, IOException {
         ObservableList<EpiDTO> epiList = FXCollections.observableList(epiService.episListBorrowed(Integer.valueOf(idLabel.getText())));
 
-        // Ordena a lista de estoque pelo nome do equipamento em ordem alfabética
         Collections.sort(epiList, Comparator.comparing(EpiDTO::getEpiName));
 
         MFXTableColumn<EpiDTO> epiName = new MFXTableColumn<>("Equipamentos", Comparator.comparing(EpiDTO::getEpiName));

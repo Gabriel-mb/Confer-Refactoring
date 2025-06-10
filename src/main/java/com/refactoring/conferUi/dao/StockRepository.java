@@ -13,19 +13,14 @@ import java.util.Optional;
 
 public interface StockRepository extends JpaRepository<Stock, StockId> {
 
-    @Query("SELECT s FROM Stock s JOIN FETCH s.supplier WHERE s.id.equipmentName = :equipmentName AND s.id.supplierId = :supplierId")
-    Optional<Stock> findByEquipmentNameAndSupplierId(
+    @Query("SELECT s FROM Stock s WHERE s.stockId.equipmentName = :equipmentName AND s.stockId.supplierId = :supplierId")
+    Stock findByEquipmentNameAndSupplierId(
             @Param("equipmentName") String equipmentName,
             @Param("supplierId") Integer supplierId);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Stock s SET s.quantity = :quantity WHERE s.id.equipmentName = :equipmentName AND s.id.supplierId = :supplierId")
-    int updateQuantity(
-            @Param("quantity") int quantity,
-            @Param("equipmentName") String equipmentName,
-            @Param("supplierId") int supplierId);
-
     @Query("SELECT DISTINCT s.id.equipmentName FROM Stock s")
     List<String> findAllEquipmentNames();
+
+
+
 }

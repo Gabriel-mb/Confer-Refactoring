@@ -42,16 +42,4 @@ public class NavigationUtils {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.getScene().setRoot(parent);
     }
-
-    public static void handleAnchorPaneDrag(MouseEvent event, AnchorPane anchorPane, double[] coordinates) {
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-
-        if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            coordinates[0] = event.getSceneX(); // x
-            coordinates[1] = event.getSceneY(); // y
-        } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-            stage.setX(event.getScreenX() - coordinates[0]);
-            stage.setY(event.getScreenY() - coordinates[1]);
-        }
-    }
 }

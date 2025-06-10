@@ -4,6 +4,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
 <?import io.github.palexdev.materialfx.controls.MFXTableView?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -11,178 +12,301 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleMouseEvents" onMousePressed="#handleMouseEvents" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.CardController">
+<GridPane alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.refactoring.conferUi.Controllers.CardController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="400.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1763.3333282470703" prefWidth="1181.666748046875" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="400.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="256.0" minHeight="100.0" prefHeight="163.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="850.0" minHeight="400.0" prefHeight="850.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="64.0" minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
+   </rowConstraints>
    <children>
-      <Label fx:id="nameLabel" layoutX="153.0" layoutY="94.0" prefHeight="0.0" prefWidth="255.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 4;">
-         <font>
-            <Font size="15.0" />
-         </font></Label>
-      <Label fx:id="employeeId" layoutX="422.0" layoutY="94.0" prefHeight="28.0" prefWidth="128.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 4;">
-         <font>
-            <Font size="15.0" />
-         </font></Label>
-      <Button layoutX="896.0" layoutY="674.0" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="43.0" prefWidth="107.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Excluir Ficha" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect></Button>
-      <Rectangle arcHeight="32.0" arcWidth="27.0" height="80.0" layoutX="78.0" layoutY="-12.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="139.0">
-         <fill>
-            <LinearGradient endX="1.0" endY="1.0">
-               <stops>
-                  <Stop>
-                     <color>
-                        <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
-                     </color>
-                  </Stop>
-                  <Stop offset="1.0">
-                     <color>
-                        <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
-                     </color>
-                  </Stop>
-               </stops>
-            </LinearGradient>
-         </fill>
-         <effect>
-            <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
-               <color>
-                  <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Rectangle>
-      <MFXButton contentDisplay="TOP" layoutX="114.0" layoutY="3.0" onAction="#onMenuButtonClick" onMouseClicked="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
-         <graphic>
-            <ImageView fitHeight="32.0" fitWidth="32.0">
-               <Image url="@../../assets/1946488.png" />
+      <MFXTableView fx:id="table" prefHeight="849.0" prefWidth="1160.0" style="-fx-border-color: #0e1c6b;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </MFXTableView>
+      <HBox alignment="BOTTOM_LEFT" prefHeight="850.0" prefWidth="1078.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <MFXDatePicker fx:id="datePicker" alignment="TOP_LEFT" allowEdit="false" borderGap="0.0" graphicTextGap="0.0" measureUnitGap="0.0" minWidth="-Infinity" popupOffsetX="172.0" popupOffsetY="-3450.0" prefHeight="0.0" prefWidth="41.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" textLimit="0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </ImageView>
-         </graphic>
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </MFXButton>
-      <MFXTextField fx:id="newEmployeeId" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" layoutX="651.0" layoutY="78.0" onAction="#onSearchButtonClick" prefHeight="43.0" prefWidth="221.0" promptText="Matricula" style="-fx-border-color: #0e1c6b; -fx-border-radius: 11; -fx-background-radius: 11; -fx-border-width: 2;" textLimit="8">
-         <font>
-            <Font size="20.0" />
-         </font>
-         <effect>
-            <DropShadow height="26.86" offsetX="4.0" offsetY="3.0" radius="13.6625" width="29.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </MFXTextField>
-      <MFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="826.0" layoutY="82.0" onMouseClicked="#onSearchButtonClick" prefHeight="27.0" prefWidth="35.0" rippleAnimateShadow="true" rippleColor="WHITE" style="-fx-background-radius: 11; -fx-background-color: transparent;" textFill="#ffffff00">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <graphic>
-            <ImageView fitHeight="28.0" fitWidth="28.0">
-               <image>
-                  <Image url="@../../assets/49116.png" />
-               </image>
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </MFXDatePicker>
+            <MFXButton fx:id="resetButton" graphicTextGap="0.0" prefHeight="38.0" prefWidth="33.0" rippleAnimateBackground="false" rippleAnimationSpeed="0.0" rippleBackgroundOpacity="0.0" rippleRadius="0.0" rippleRadiusMultiplier="0.0" style="-fx-background-color: transparent;" text=" ">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </ImageView>
-         </graphic>
-      </MFXButton>
-      <Button layoutX="896.0" layoutY="618.0" mnemonicParsing="false" onAction="#onModifyButtonClick" prefHeight="43.0" prefWidth="107.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Modificar Ficha" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Button>
-      <Button fx:id="printButton" layoutX="153.0" layoutY="723.0" mnemonicParsing="false" onAction="#onPrintButtonClick" prefHeight="31.0" prefWidth="74.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Imprimir" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Button>
-      <Button layoutX="718.0" layoutY="723.0" mnemonicParsing="false" onAction="#onEquipButtonClick" prefHeight="31.0" prefWidth="154.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Ficha de Equipamentos" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Button>
-      <MFXTableView fx:id="table" layoutX="153.0" layoutY="140.0" prefHeight="573.0" prefWidth="720.0" style="-fx-border-color: #0e1c6b;" />
-      <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="294.0" layoutY="673.0">
-         <image>
-            <Image url="@../../assets/calendarReset.png" />
-         </image>
-      </ImageView>
-      <MFXButton fx:id="resetButton" graphicTextGap="0.0" layoutX="287.0" layoutY="664.0" prefHeight="38.0" prefWidth="33.0" rippleAnimateBackground="false" rippleAnimationSpeed="0.0" rippleBackgroundOpacity="0.0" rippleRadius="0.0" rippleRadiusMultiplier="0.0" style="-fx-background-color: transparent;" text=" ">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </MFXButton>
-      <MFXDatePicker fx:id="datePicker" alignment="TOP_LEFT" allowEdit="false" borderGap="0.0" graphicTextGap="0.0" layoutX="243.0" layoutY="664.0" measureUnitGap="0.0" minWidth="-Infinity" popupOffsetX="172.0" popupOffsetY="-3450.0" prefHeight="0.0" prefWidth="41.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" textLimit="0" AnchorPane.leftAnchor="243.0">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></MFXDatePicker>
-      <Button fx:id="episButton" layoutX="557.0" layoutY="723.0" mnemonicParsing="false" onAction="#onEpiButtonClick" prefHeight="31.0" prefWidth="154.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Ficha de EPI's" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
-               <color>
-                  <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Button>
+               <graphic>
+                  <ImageView disable="true" fitHeight="20.0" fitWidth="20.0">
+                     <image>
+                        <Image url="@../../assets/calendarReset.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </MFXButton>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets bottom="21.5" left="105.0" />
+         </GridPane.margin>
+      </HBox>
+      <GridPane GridPane.columnIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="615.6666870117188" minWidth="10.0" prefWidth="582.3333129882812" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="1073.3333435058594" minWidth="10.0" prefWidth="578.6666870117188" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <HBox alignment="BOTTOM_RIGHT" maxHeight="310.0" prefHeight="166.0" prefWidth="1098.0" GridPane.columnIndex="1">
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+               <children>
+                  <StackPane alignment="BOTTOM_RIGHT">
+                     <children>
+                        <MFXTextField fx:id="newEmployeeId" borderGap="0.0" floatMode="DISABLED" floatingTextGap="0.0" onAction="#onSearchButtonClick" prefHeight="43.0" prefWidth="221.0" promptText="Matricula" style="-fx-border-color: #0e1c6b; -fx-border-radius: 11; -fx-background-radius: 11; -fx-border-width: 2;" textLimit="8">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <effect>
+                              <DropShadow height="26.86" offsetX="4.0" offsetY="3.0" radius="13.6625" width="29.79">
+                                 <color>
+                                    <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                                 </color>
+                              </DropShadow>
+                           </effect>
+                           <StackPane.margin>
+                              <Insets bottom="10.0" />
+                           </StackPane.margin>
+                        </MFXTextField>
+                        <MFXButton alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#onSearchButtonClick" prefHeight="27.0" prefWidth="35.0" rippleAnimateShadow="true" rippleColor="WHITE" style="-fx-background-radius: 11; -fx-background-color: transparent;" textFill="#ffffff00">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="28.0" fitWidth="28.0">
+                                 <image>
+                                    <Image url="@../../assets/49116.png" />
+                                 </image>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </ImageView>
+                           </graphic>
+                           <StackPane.margin>
+                              <Insets bottom="13.0" />
+                           </StackPane.margin>
+                        </MFXButton>
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
+            <HBox alignment="BOTTOM_LEFT" maxHeight="310.0" prefHeight="166.0" prefWidth="1098.0">
+               <children>
+                  <Label fx:id="nameLabel" prefHeight="36.0" prefWidth="255.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 4;">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="employeeId" prefHeight="36.0" prefWidth="128.0" style="-fx-background-color: #ffffff; -fx-background-radius: 5; -fx-border-color: #0e1c6b; -fx-border-radius: 5; -fx-padding: 4;">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </GridPane>
+      <AnchorPane>
+         <children>
+            <Rectangle arcHeight="32.0" arcWidth="27.0" height="80.0" layoutX="8.0" layoutY="-13.0" stroke="#ffffff00" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="139.0">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.054901961237192154" green="0.10980392247438431" blue="0.41960784792900085" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="0.19607843458652496" green="0.30588236451148987" blue="0.8549019694328308" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </fill>
+               <effect>
+                  <DropShadow height="22.41" offsetX="3.0" offsetY="4.0" radius="10.965" width="23.45">
+                     <color>
+                        <Color red="0.3019607961177826" green="0.29411765933036804" blue="0.29411765933036804" opacity="0.550000011920929" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Rectangle>
+            <MFXButton contentDisplay="TOP" layoutX="40.0" layoutY="5.0" onAction="#onMenuButtonClick" prefHeight="43.0" prefWidth="67.0" rippleAnimateBackground="false" rippleColor="#bdbdbd00" style="-fx-background-color: TRANSPARENT;" text="Menu" textAlignment="CENTER" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0">
+                     <image>
+                        <Image url="@../../assets/1946488.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </graphic>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </MFXButton>
+         </children>
+      </AnchorPane>
+      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <HBox alignment="CENTER_RIGHT" prefHeight="64.0" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onEquipButtonClick" prefHeight="31.0" prefWidth="154.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Ficha de Equipamentos" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <effect>
+                        <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
+                           <color>
+                              <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="episButton" mnemonicParsing="false" onAction="#onEpiButtonClick" prefHeight="31.0" prefWidth="154.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Ficha de EPI's" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <effect>
+                        <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
+                           <color>
+                              <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="64.0">
+               <children>
+                  <Button fx:id="printButton1" mnemonicParsing="false" onAction="#onPrintButtonClick" prefHeight="30.0" prefWidth="67.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda); -fx-background-radius: 5;" text="Imprimir" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </GridPane>
+      <VBox alignment="BOTTOM_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="43.0" prefWidth="107.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Excluir Ficha" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <effect>
+                  <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
+                     <color>
+                        <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onModifyButtonClick" prefHeight="43.0" prefWidth="107.0" style="-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0e1c6b, #324eda);" text="Modificar Ficha" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <effect>
+                  <DropShadow height="28.76" offsetX="4.0" offsetY="3.0" radius="13.8875" width="28.79">
+                     <color>
+                        <Color red="0.30000001192092896" green="0.2939999997615814" blue="0.2939999997615814" opacity="0.550000011920929" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets bottom="12.0" left="20.0" />
+         </GridPane.margin>
+      </VBox>
    </children>
-</AnchorPane>
+</GridPane>

@@ -64,8 +64,6 @@ public class CardController {
     private ObservableList<BorrowedDTO> borrowingsList;
     private ObservableList<BorrowedDTO> filteredItems;
 
-    private final double[] coordinates = new double[2];
-
     private final EmployeeService employeeService;
     private final BorrowedService borrowedService;
 
@@ -78,11 +76,6 @@ public class CardController {
 
     @FXML
     private void initialize() {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
         newEmployeeId.setOnAction(event -> {
             try {
                 Employee employee = employeeService.readId(parseInt(newEmployeeId.getText()));
@@ -150,18 +143,18 @@ public class CardController {
         MFXTableColumn<BorrowedDTO> idEquipment = new MFXTableColumn<>("Patrimônio",
                 Comparator.comparing(BorrowedDTO::getIdEquipment));
 
-        MFXTableColumn<BorrowedDTO> supplierName = new MFXTableColumn<>("Fornecedor",
-                Comparator.comparing(BorrowedDTO::getSupplierName));
-
         MFXTableColumn<BorrowedDTO> equipmentName = new MFXTableColumn<>("Ferramenta",
                 Comparator.comparing(BorrowedDTO::getEquipmentName));
+
+        MFXTableColumn<BorrowedDTO> supplierName = new MFXTableColumn<>("Fornecedor",
+                Comparator.comparing(BorrowedDTO::getSupplierName));
 
         MFXTableColumn<BorrowedDTO> date = new MFXTableColumn<>("Data",
                 Comparator.comparing(BorrowedDTO::getDate));
 
         idEquipment.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getIdEquipment));
-        supplierName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getSupplierName));
         equipmentName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getEquipmentName));
+        supplierName.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getSupplierName));
         date.setRowCellFactory(dto -> new MFXTableRowCell<>(BorrowedDTO::getDate));
 
         table.getFilters().addAll(
@@ -171,16 +164,11 @@ public class CardController {
         );
 
         equipmentName.setPrefWidth(350);
-        table.getTableColumns().addAll(idEquipment, supplierName, equipmentName, date);
+        table.getTableColumns().addAll(idEquipment, equipmentName, supplierName, date);
         table.setItems(borrowingsList);
 
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onModifyButtonClick (ActionEvent event) throws IOException {

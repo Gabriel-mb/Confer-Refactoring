@@ -35,11 +35,6 @@ public class SearchController {
 
     @FXML
     private void initialize() {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
         startCardReaderListener();
     }
 
@@ -107,11 +102,6 @@ public class SearchController {
         } catch (SQLException e) {
             AlertUtils.showErrorAlert("Erro ao buscar funcionário!", "Tente Novamente!");
         }
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     @FXML

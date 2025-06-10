@@ -34,9 +34,6 @@ public class EpiStockController {
     @Autowired
     private EpiService epiService;
     @FXML
-    private AnchorPane anchorPane;
-    private final double[] coordinates = new double[2];
-    @FXML
     MFXTableView<EpiDTO> table;
     @FXML
     private MFXTextField quantity;
@@ -44,13 +41,6 @@ public class EpiStockController {
     private MFXFilterComboBox<String> epiDropDown;
     @FXML
     private MFXTextField numCa;
-    @FXML
-    private MFXButton minimizeButton;
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
-    }
 
     public void onMenuButtonClick(ActionEvent event) throws IOException {
         NavigationUtils.navigateTo(event, SearchController.class.getResource("/static/fxml/search-view.fxml"), null);
@@ -142,11 +132,6 @@ public class EpiStockController {
 
     @FXML
     private void initialize() throws SQLException {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
         setTableEquipments();
         setEpiDropDown();
         table.autosizeColumnsOnInitialization();

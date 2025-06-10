@@ -58,7 +58,6 @@ public class EquipmentInputsController {
     @FXML
     private MFXTableView<BorrowedDTO> table;
     ObservableList<BorrowedDTO> borrowingsList = FXCollections.observableArrayList();
-    private final double[] coordinates = new double[2];
     private String equipName;
     private String supplierName;
 
@@ -75,11 +74,6 @@ public class EquipmentInputsController {
 
     @FXML
     private void initialize() {
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            if (node instanceof TextField) {
-                node.setFocusTraversable(false);
-            }
-        }
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Supplier<StringConverter<LocalDate>> converterSupplier = () -> new LocalDateStringConverter(dateFormatter, null);
         date.setConverterSupplier(converterSupplier);
@@ -186,11 +180,6 @@ public class EquipmentInputsController {
         equipmentName.setPrefWidth(350);
         table.getTableColumns().addAll(idEquipment, supplierName, equipmentName, date);
         table.setItems(list);
-    }
-
-    @FXML
-    private void handleMouseEvents(MouseEvent event) {
-        NavigationUtils.handleAnchorPaneDrag(event, anchorPane, coordinates);
     }
 
     public void onMenuButtonClick(ActionEvent event) throws IOException {

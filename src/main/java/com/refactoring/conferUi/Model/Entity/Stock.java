@@ -18,6 +18,10 @@ public class Stock {
     public Stock() {
     }
 
+    public Stock(StockId stockId) {
+        this.stockId = stockId;
+    }
+
     public Stock(StockId stockId, Integer quantity) {
         this.stockId = stockId;
         this.quantity = quantity;
