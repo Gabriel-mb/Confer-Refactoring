@@ -17,7 +17,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 
 import java.sql.Date;
@@ -27,6 +30,8 @@ import java.time.format.DateTimeFormatter;
 import javafx.scene.input.MouseEvent;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,11 +145,6 @@ public class EquipmentInputsController {
         equipName = sections[1];
     }
 
-    public void removeData(Integer idEquip, String supplierName) throws SQLException {
-        if (borrowedService.read(idEquip, supplierService.findIdByName(supplierName)) != null)
-            borrowedService.delete(idEquip, supplierService.findIdByName(supplierName));
-    }
-
     public void setEmployee(String id, String name) {
         idLabel.setText(id);
         nameLabel.setText(name);
@@ -187,8 +187,9 @@ public class EquipmentInputsController {
     }
 
     public void onDevolutionClick(ActionEvent event) {
-        /// //////////////////////
+        /////////////////
     }
+
 
     public void onBackButtonClick(ActionEvent event) throws IOException, SQLException {
         NavigationUtils.navigateTo(event, CardController.class.getResource("/static/fxml/patCard-view.fxml"), controller -> {

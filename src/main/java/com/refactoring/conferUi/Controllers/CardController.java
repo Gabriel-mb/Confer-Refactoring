@@ -1,6 +1,7 @@
 package com.refactoring.conferUi.Controllers;
 
 import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
+import com.refactoring.conferUi.Model.DTO.StockDTO;
 import com.refactoring.conferUi.Model.Entity.Employee;
 import com.refactoring.conferUi.Services.BorrowedService;
 import com.refactoring.conferUi.Services.EmployeeService;
@@ -136,7 +137,6 @@ public class CardController {
         table.getTableColumns().clear();
         table.getItems().clear();
         employeeId.setText(id);
-
         List<BorrowedDTO> borrowedItems = borrowedService.listBorrowed(Integer.valueOf(employeeId.getText()));
         borrowingsList = FXCollections.observableArrayList(borrowedItems);
 
@@ -182,15 +182,13 @@ public class CardController {
 
     public void onPrintButtonClick() {
         try {
-            // 1. Gerar o relatório
             ObservableList<BorrowedDTO> items = table.getTransformableList();
             Map<String, Object> params = new HashMap<>();
             params.put("CollectionBeanParam", new JRBeanCollectionDataSource(items));
             params.put("employeeName", nameLabel.getText());
-            params.put("employeeId", parseInt(employeeId.getText()));
+            params.put("employeeId", Integer.parseInt(employeeId.getText()));
             params.put("image", ClassLoader.getSystemResourceAsStream("assets/LogoCorel.png"));
 
-            // 2. Compilar e exportar para PDF
             JasperPrint print = JasperFillManager.fillReport(
                     JasperCompileManager.compileReport(
                             getClass().getResourceAsStream("/static/jrxml/CardPrint.jrxml")),
@@ -198,11 +196,11 @@ public class CardController {
                     new JREmptyDataSource()
             );
 
-            // 3. Salvar e abrir no Windows
             File pdf = File.createTempFile("rel_", ".pdf");
             JasperExportManager.exportReportToPdfFile(print, pdf.getPath());
-            Runtime.getRuntime().exec("cmd /c start \"\" \"" + pdf.getPath() + "\"");
+            pdf.deleteOnExit();
 
+            Runtime.getRuntime().exec("cmd /c start \"\" \"" + pdf.getAbsolutePath() + "\"");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,7 +234,7 @@ public class CardController {
         LocalDate selectedDate = datePicker.getValue();
         filteredItems.clear();
 
-        for (BorrowedDTO item : borrowingsList) {
+        for (BorrowedDTO item : table.getItems()) {
             LocalDate itemDate = item.getDate().toLocalDate();
             if (itemDate.equals(selectedDate)) {
                 filteredItems.add(item);
@@ -247,6 +245,6 @@ public class CardController {
     }
 
     public void resetDatePicker() {
-        table.setItems(borrowingsList);
+        table.setItems(FXCollections.observableArrayList(borrowedService.listBorrowed(Integer.valueOf(employeeId.getText()))));
     }
 }

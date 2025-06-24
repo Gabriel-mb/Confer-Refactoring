@@ -11,7 +11,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class ConferApplication extends Application {
 
     private static ConfigurableApplicationContext springContext;
-    private Stage primaryStage;
 
     public static void setSpringContext(ConfigurableApplicationContext context) {
         ConferApplication.springContext = context;
@@ -23,9 +22,7 @@ public class ConferApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
 
-        // Carrega a cena principal usando o contexto do Spring
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/static/fxml/login-view.fxml"));
         loader.setControllerFactory(springContext::getBean);
 
@@ -44,10 +41,6 @@ public class ConferApplication extends Application {
             springContext.close();
         }
         Platform.exit();
-    }
-
-    public Stage getPrimaryStage() {
-        return primaryStage;
     }
 
     public static void main(String[] args) {

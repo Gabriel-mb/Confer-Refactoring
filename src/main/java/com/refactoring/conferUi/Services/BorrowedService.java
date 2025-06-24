@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,31 +44,6 @@ public class BorrowedService {
         newEntry.setDate(dto.getDate());
 
         borrowedRepository.save(newEntry);
-    }
-
-    private EquipmentBorrowed convertDtoToEntity(BorrowedDTO dto) {
-        EquipmentBorrowed entity = new EquipmentBorrowed();
-
-        Equipment equipment = equipmentRepository.findById(dto.getIdEquipment())
-                .orElseThrow(() -> new EntityNotFoundException("Equipment not found with id: " + dto.getIdEquipment()));
-
-        Employee employee = employeeRepository.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + dto.getEmployeeId()));
-
-        entity.setEquipment(equipment);
-        entity.setEmployee(employee);
-        entity.setDate(dto.getDate());
-
-        return entity;
-    }
-
-    public BorrowedDTO convertEntityToDto(EquipmentBorrowed entity) {
-        return new BorrowedDTO(
-                entity.getEquipment().getNameEquip(),
-                entity.getEquipment().getIdEquipment(),
-                entity.getDate(),
-                entity.getEquipment().getSupplier().getSupplierName()
-        );
     }
 
     public void delete(Integer idEquip, Integer supplierId) throws SQLException {

@@ -1,10 +1,14 @@
 package com.refactoring.conferUi.Controllers;
 
+import com.refactoring.conferUi.Model.DTO.BorrowedDTO;
 import com.refactoring.conferUi.Model.DTO.EpiDTO;
+import com.refactoring.conferUi.Model.DTO.StockDTO;
 import com.refactoring.conferUi.Model.Entity.Employee;
 import com.refactoring.conferUi.Services.EmployeeService;
 import com.refactoring.conferUi.Services.EpiService;
 import com.refactoring.conferUi.Utils.NavigationUtils;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.refactoring.conferUi.Utils.AlertUtils.showErrorAlert;
@@ -44,9 +49,13 @@ public class EpiCardController {
     @FXML
     private TextField newEmployeeId;
     @FXML
-    private AnchorPane anchorPane;
-    @FXML
     private MFXTableView<EpiDTO> table;
+    @FXML
+    private MFXDatePicker datePicker;
+    @FXML
+    private MFXButton resetButton;
+
+    private ObservableList<EpiDTO> filteredItems;
 
     private final EpiService epiService;
     private final EmployeeService employeeService;
@@ -59,6 +68,9 @@ public class EpiCardController {
 
     @FXML
     private void initialize() {
+        datePicker.setOnAction(event -> onDatePickerSelect());
+        resetButton.setOnAction(event -> resetDatePicker());
+        filteredItems = FXCollections.observableArrayList();
     }
 
     public void onSearchButtonClick() throws SQLException, IOException {
@@ -154,5 +166,23 @@ public class EpiCardController {
                 }
             }
         });
+    }
+
+    public void onDatePickerSelect() {
+        LocalDate selectedDate = datePicker.getValue();
+        filteredItems.clear();
+
+        for (EpiDTO item : table.getItems()) {
+            LocalDate itemDate = item.getDate().toLocalDate();
+            if (itemDate.equals(selectedDate)) {
+                filteredItems.add(item);
+            }
+        }
+
+        table.setItems(filteredItems);
+    }
+
+    public void resetDatePicker() {
+        table.setItems(FXCollections.observableArrayList(epiService.episListBorrowed(Integer.valueOf(employeeId.getText()))));
     }
 }

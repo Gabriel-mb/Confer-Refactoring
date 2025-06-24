@@ -32,6 +32,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -148,16 +149,27 @@ public class InventoryController {
         }
     }
 
-    public void onPrintButtonClick() throws JRException, SQLException, IOException {
+    public void onPrintButtonClick() {
+        try {
+            ObservableList<EquipmentDTO> filteredItems = table.getTransformableList();
+            JRBeanCollectionDataSource filteredItemsJRBean = new JRBeanCollectionDataSource(filteredItems);
 
-        ObservableList<EquipmentDTO> filteredItems = table.getTransformableList();
-        JRBeanCollectionDataSource filteredItemsJRBean = new JRBeanCollectionDataSource(filteredItems);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("CollectionBeanParam", filteredItemsJRBean);
-        InputStream inputStream = getClass().getResourceAsStream("/static/jrxml/InventoryPrint.jrxml");
-        JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-        JasperViewer.viewReport(jasperPrint, false);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CollectionBeanParam", filteredItemsJRBean);
+
+            InputStream inputStream = getClass().getResourceAsStream("/static/jrxml/InventoryPrint.jrxml");
+            JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+
+            File pdf = File.createTempFile("inventory_", ".pdf");
+            JasperExportManager.exportReportToPdfFile(jasperPrint, pdf.getPath());
+            pdf.deleteOnExit();
+
+            Runtime.getRuntime().exec("cmd /c start \"\" \"" + pdf.getAbsolutePath() + "\"");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

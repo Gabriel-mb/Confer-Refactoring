@@ -27,6 +27,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -106,7 +107,7 @@ public class StockEquipCardController {
         Employee employee = employeeService.readId(parseInt(employeeId.getText()));
         nameLabel.setText(employee.getName());
 
-        borrowingsList = FXCollections.observableList(stockService.stockListBorrowed(Integer.valueOf(employeeId.getText()))); //////////////////////////
+        borrowingsList = FXCollections.observableList(stockService.stockListBorrowed(Integer.valueOf(employeeId.getText())));
 
         MFXTableColumn<StockDTO> equipmentName = new MFXTableColumn<>("Ferramenta", Comparator.comparing(StockDTO::getEquipmentName));
         MFXTableColumn<StockDTO> quantity = new MFXTableColumn<>("Quantidade", Comparator.comparing(StockDTO::getQuantity));
@@ -143,21 +144,34 @@ public class StockEquipCardController {
         });
     }
 
-    public void onPrintButtonClick() throws JRException, SQLException, IOException {
-        ObservableList<StockDTO> filteredItems = table.getTransformableList();
-        JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(filteredItems);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("CollectionBeanParam", itemsJRBean);
-        parameters.put("employeeName", nameLabel.getText());
-        parameters.put("employeeId", parseInt(employeeId.getText()));
-        parameters.put("image", ClassLoader.getSystemResourceAsStream("assets/LogoCorel.png"));
+    public void onPrintButtonClick() {
+        try {
+            ObservableList<StockDTO> filteredItems = table.getTransformableList();
+            JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(filteredItems);
 
-        InputStream inputStream = getClass().getResourceAsStream("/static/jrxml/StockCardPrint.jrxml");
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CollectionBeanParam", itemsJRBean);
+            parameters.put("employeeName", nameLabel.getText());
+            parameters.put("employeeId", Integer.parseInt(employeeId.getText()));
+            parameters.put("image", ClassLoader.getSystemResourceAsStream("assets/LogoCorel.png"));
 
-        JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-        JasperViewer.viewReport(jasperPrint, false);
+            InputStream inputStream = getClass().getResourceAsStream("/static/jrxml/StockCardPrint.jrxml");
+            JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+
+            File pdf = File.createTempFile("stock_card_", ".pdf");
+            JasperExportManager.exportReportToPdfFile(jasperPrint, pdf.getPath());
+            pdf.deleteOnExit();
+
+            Runtime.getRuntime().exec("cmd /c start \"\" \"" + pdf.getAbsolutePath() + "\"");
+
+        } catch (NumberFormatException e) {
+            AlertUtils.showErrorAlert("ID inválido", "O ID do funcionário deve ser um número.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showErrorAlert("Erro ao gerar relatório", e.getMessage());
+        }
     }
 
     public void onBackButtonClick(ActionEvent event) throws IOException, SQLException {
@@ -174,9 +188,9 @@ public class StockEquipCardController {
 
     public void onDatePickerSelect() {
         LocalDate selectedDate = datePicker.getValue();
-        filteredItems.clear(); // Limpa a lista de itens filtrados
+        filteredItems.clear();
 
-        for (StockDTO item : borrowingsList) {
+        for (StockDTO item : table.getItems()) {
             LocalDate itemDate = item.getDate().toLocalDate();
             if (itemDate.equals(selectedDate)) {
                 filteredItems.add(item);
@@ -187,7 +201,7 @@ public class StockEquipCardController {
     }
 
     public void resetDatePicker() {
-        table.setItems(borrowingsList);
+        table.setItems(FXCollections.observableList(stockService.stockListBorrowed(Integer.valueOf(employeeId.getText()))));
     }
 
 }

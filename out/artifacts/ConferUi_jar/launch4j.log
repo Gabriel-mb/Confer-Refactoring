@@ -1,0 +1,35 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\Gabriel\IdeaProjects\Confer-Refactoring\out\artifacts\ConferUi_jar\ConFer.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Gabriel\IdeaProjects\Confer-Refactoring\out\artifacts\ConferUi_jar\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JRE_HOME = 
+JRE paths:	
+Error msg:	This application requires a Java Runtime Environment.
+Error:		O sistema não pôde encontrar a opção de ambiente digitada.
+
+
+
+Version:	3.50
+CmdLine:	C:\Users\Gabriel\IdeaProjects\Confer-Refactoring\out\artifacts\ConferUi_jar\ConFer.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Gabriel\IdeaProjects\Confer-Refactoring\out\artifacts\ConferUi_jar\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JRE_HOME = C:\Program Files\Zulu\zulu-17-jre\
+JRE paths:	C:\Program Files\Zulu\zulu-17-jre\
+Check launcher:	C:\Program Files\Zulu\zulu-17-jre\bin\javaw.exe (OK)
+Version string: 1.017.000_015 / 64-Bit (OK)
+Launcher:	C:\Program Files\Zulu\zulu-17-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Gabriel\IdeaProjects\Confer-Refactoring\out\artifacts\ConferUi_jar\ConFer.exe"
+Args length:	93/32768 chars
+Exit code:	0

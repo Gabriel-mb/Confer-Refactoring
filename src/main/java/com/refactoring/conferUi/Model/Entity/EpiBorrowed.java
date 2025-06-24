@@ -8,7 +8,12 @@ import java.sql.Date;
 @Table(name = "episborrowed")
 public class EpiBorrowed {
 
-    @EmbeddedId
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_borrowed")
+    private Integer idBorrowed;
+
+    @Embedded
     private EpiId id;
 
     @Column(name = "quantity")

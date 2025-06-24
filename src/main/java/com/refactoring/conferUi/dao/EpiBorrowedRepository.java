@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.util.List;
 
-public interface EpiBorrowedRepository extends JpaRepository<EpiBorrowed, EpiId> {
+public interface EpiBorrowedRepository extends JpaRepository<EpiBorrowed, Integer> {
 
     @Query("SELECT e FROM EpiBorrowed e WHERE e.employee.idEmployee = :idEmployee")
     List<EpiBorrowed> findByIdEmployee(@Param("idEmployee") Integer idEmployee);
